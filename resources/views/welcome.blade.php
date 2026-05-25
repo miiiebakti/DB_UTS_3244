@@ -82,9 +82,7 @@
         @endforeach
    </div>
 
-
-   <!-- ini ada lagi -->
-    <!-- Zona Menampilkan Grid List Event -->
+    <!-- Menampilkan Grid List Event -->
  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($events as $event)
         <div

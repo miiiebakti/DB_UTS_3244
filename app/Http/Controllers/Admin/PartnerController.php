@@ -8,9 +8,6 @@ use App\Models\Partner;
 
 class PartnerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $search = $request->search;
@@ -24,17 +21,11 @@ class PartnerController extends Controller
         return view('admin.partners.index', compact('partners'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.partners.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -56,9 +47,6 @@ class PartnerController extends Controller
             ->with('success', 'Partner berhasil ditambahkan');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $partner = Partner::findOrFail($id);
@@ -66,9 +54,6 @@ class PartnerController extends Controller
         return view('admin.partners.edit', compact('partner'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -92,9 +77,6 @@ class PartnerController extends Controller
             ->with('success', 'Partner berhasil diupdate');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $partner = Partner::findOrFail($id);

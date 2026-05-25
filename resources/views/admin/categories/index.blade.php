@@ -3,10 +3,8 @@
 @section('content')
 
 <main class="flex-1 p-10 overflow-y-auto">
-
     <!-- HEADER -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
-
         <div>
             <h1 class="text-3xl font-black">
                 Manajemen Kategori
@@ -18,7 +16,6 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-3">
-
             <!-- SEARCH -->
             <form
                 action="{{ route('categories.index') }}"
@@ -35,24 +32,17 @@
                 <button
                     type="submit"
                     class="px-5 py-3 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-900 transition">
-
                     Cari
-
                 </button>
-
             </form>
 
             <!-- BUTTON TAMBAH -->
             <a
                 href="{{ route('categories.create') }}"
                 class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition text-center">
-
                 + Tambah Kategori
-
             </a>
-
         </div>
-
     </div>
 
     <!-- SUCCESS MESSAGE -->
@@ -66,16 +56,11 @@
 
     <!-- TABLE -->
     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-
         <div class="overflow-x-auto">
-
             <table class="w-full">
-
                 <!-- TABLE HEAD -->
                 <thead class="bg-slate-100">
-
                     <tr>
-
                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700">
                             ID
                         </th>
@@ -91,9 +76,7 @@
                         <th class="px-6 py-4 text-center text-sm font-black text-slate-700">
                             Aksi
                         </th>
-
                     </tr>
-
                 </thead>
 
                 <!-- TABLE BODY -->
@@ -110,83 +93,53 @@
 
                             <!-- NAME -->
                             <td class="px-6 py-4">
-
                                 <div class="font-bold text-slate-800">
                                     {{ $category->name }}
                                 </div>
-
                             </td>
 
                             <!-- DESCRIPTION -->
                             <td class="px-6 py-4 text-sm text-slate-600">
-
                                 {{ $category->description }}
-
                             </td>
-
-                       
 
                             <!-- ACTION -->
                             <td class="px-6 py-4">
-
                                 <div class="flex justify-center gap-2">
-
                                     <!-- EDIT -->
                                     <a
                                         href="{{ route('categories.edit', $category->id) }}"
-                                        class="px-4 py-2 bg-yellow-400 text-white rounded-xl font-bold hover:bg-yellow-500 transition">
-
+                                        class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
                                         Edit
-
                                     </a>
 
                                     <!-- DELETE -->
                                     <form
                                         action="{{ route('categories.destroy', $category->id) }}"
                                         method="POST">
-
                                         @csrf
                                         @method('DELETE')
-
                                         <button
                                             type="submit"
                                             onclick="return confirm('Yakin ingin menghapus kategori ini?')"
-                                            class="px-4 py-2 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition">
-
+                                            class="p-2.5 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition">
                                             Hapus
-
                                         </button>
-
                                     </form>
-
                                 </div>
-
                             </td>
-
                         </tr>
 
                     @empty
-
                         <tr>
-
                             <td colspan="5" class="px-6 py-8 text-center text-slate-500">
-
                                 Data kategori belum tersedia.
-
                             </td>
-
                         </tr>
-
                     @endforelse
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </main>
-
 @endsection
