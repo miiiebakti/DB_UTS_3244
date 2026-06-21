@@ -19,6 +19,13 @@ class EventController extends Controller
     return view('welcome', compact('events', 'categories'));
 }
 	
+    public function show(Event $event)
+{
+    $categories = Category::all();
+
+    return view('event-detail', compact('event', 'categories'));
+}
+
 	public function checkout()
     {
         return view('checkout');

@@ -16,11 +16,9 @@ class HomeController extends Controller
     $events = Event::query();
 
     if ($request->category) {
-        $category = Category::where('slug', $request->category)->first();
-
-        if ($category) {
-            $events->where('category_id', $category->id);
-        }
+        if ($request->category) {
+    $events->where('category_id', $request->category);
+}
     }
 
     $events = $events->get();

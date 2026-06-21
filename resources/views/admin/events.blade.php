@@ -44,8 +44,11 @@
         </td>
 
         <td class="px-8 py-6">
-            <img src="{{ asset($event->poster_path) }}" 
-                 class="w-16 h-20 rounded-xl object-cover shadow-sm">
+           <img src="{{ ($event->poster_path &&
+                Storage::disk('public')->exists($event->poster_path))
+                ? asset('storage/'.$event->poster_path)
+                : 'https://placehold.co/200x600' }}"
+                class="w-16 h-20 rounded-xl object-cover">
         </td>
 
         <td class="px-8 py-6">

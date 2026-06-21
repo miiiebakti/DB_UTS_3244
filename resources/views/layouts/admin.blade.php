@@ -142,7 +142,7 @@
 
         </nav>
 
-        <!-- FOOTER -->
+             <!-- FOOTER -->
         <div class="pt-6 border-t border-indigo-800">
 
             <a href="/"

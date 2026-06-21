@@ -9,13 +9,40 @@
     </header>
 
     <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 max-w-4xl">
-        <form action="/admin/events" method="POST" class="space-y-6">
+       <form action="/admin/events" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
+            @if ($errors->any())
+                <div class="mb-4 p-4 bg-red-50 border border-red-300 rounded-2xl">
+                    <h4 class="font-bold text-red-700 mb-2">
+                        Data gagal disimpan!
+                    </h4>
+
+                    <ul class="list-disc list-inside text-red-600">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div>
-                <label class="block mb-2 font-bold text-slate-700">Category ID</label>
-                <input type="number" name="category_id"
-                    class="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                <label class="block mb-2 font-bold text-slate-700">
+                    Kategori
+                </label>
+
+                <select name="category_id"
+                    class="w-full px-5 py-4 rounded-2xl border border-slate-200">
+
+                    <option value="">-- Pilih Kategori --</option>
+
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+
+                </select>
             </div>
 
             <div>
@@ -57,9 +84,14 @@
             </div>
 
             <div>
-                <label class="block mb-2 font-bold text-slate-700">Poster Path</label>
-                <input type="text" name="poster_path"
-                    class="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                <label class="block mb-2 font-bold text-slate-700">
+                    Poster Event
+                </label>
+
+                <input type="file"
+                    name="poster"
+                    accept="image/*"
+                    class="w-full px-5 py-4 rounded-2xl border border-slate-200">
             </div>
 
             <div class="flex gap-4 pt-4">
