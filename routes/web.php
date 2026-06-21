@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminEventController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/login', function () {
     return redirect()->route('admin.login');
@@ -46,6 +47,14 @@ Route::get('/event', [EventController::class, 'event'])->name('event');
 Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
 
 Route::get('/ticket', [TicketController::class, 'ticket'])->name('ticket');
+
+Route::get('/checkout/{event}',
+    [CheckoutController::class, 'create'])
+    ->name('checkout.create');
+
+Route::post('/checkout/{event}',
+    [CheckoutController::class, 'store'])
+    ->name('checkout.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -82,7 +91,7 @@ Route::prefix('admin')
 
     // TRANSACTIONS
     Route::get('/transactions', [TransactionController::class, 'index'])
-        ->name('admin.transactions');
+        ->name('transactions.index');
 
     // CATEGORY CRUD
     Route::resource('categories', CategoryController::class);

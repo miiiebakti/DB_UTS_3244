@@ -119,7 +119,7 @@
             </a>
 
             <!-- TRANSAKSI -->
-            <a href="{{ route('admin.transactions') }}"
+            <a href="{{ route('transactions.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
                 {{ Request::is('admin/transactions*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
 
