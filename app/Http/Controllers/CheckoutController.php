@@ -24,16 +24,16 @@ class CheckoutController extends Controller
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
         ]);
-
+    
         if ($event->stock <= 0) {
             return back()->with('error', 'Mohon maaf, tiket untuk acara ini sudah habis.');
         }
-
+    
         $orderId = 'TRX-' . time() . '-' . Str::random(5);
-
+    
         $totalPrice = $event->price + 5000;
-
-        Transaction::create([
+    
+        $transaction = Transaction::create([
             'event_id'       => $event->id,
             'order_id'       => $orderId,
             'customer_name'  => $request->customer_name,
@@ -42,9 +42,79 @@ class CheckoutController extends Controller
             'total_price'    => $totalPrice,
             'status'         => 'pending',
         ]);
+    
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+    
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => $totalPrice,
+            ],
+    
+            'customer_details' => [
+                'first_name' => $request->customer_name,
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
+            ],
+        ];
+    
+        try {
+    
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+    
+            $transaction->update([
+                'snap_token' => $snapToken
+            ]);
+    
+            return redirect()->route('checkout.payment', $transaction->order_id);
+    
+        } catch (\Exception $e) {
+    
+            return back()->with('error', $e->getMessage());
+    
+        }
+    }
 
-        return redirect()->route('ticket', [
-    'order_id' => $orderId
-]);
+    public function payment($order_id)
+    {
+         // Mengambil daftar kategori untuk keperluan menu footer
+         $categories = \App\Models\Category::all();
+
+         $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
+         return view('checkout.payment', compact('transaction','categories'));
+         
+    }
+    
+
+    public function success($order_id)
+    {
+        // Mengambil daftar kategori untuk keperluan menu footer
+         $categories = \App\Models\Category::all();
+
+         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+         
+         // Validasi status pembayaran asli dari Midtrans (Mencegah manipulasi URL)
+         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+         \Midtrans\Config::$isProduction = false;
+         
+         try {
+
+    $midtransStatus = \Midtrans\Transaction::status($order_id);
+
+
+
+    if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
+        $transaction->update(['status' => 'success']);
+    }
+
+} catch (\Exception $e) {
+             // Jika error (transaksi tidak ada di Midtrans, koneksi terputus), kembalikan ke beranda
+             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses oleh sistem pembayaran.');
+         }
+
+         return view('checkout.success', compact('transaction','categories'));
     }
 }

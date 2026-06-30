@@ -99,5 +99,14 @@ Route::prefix('admin')
     // PARTNER CRUD
     Route::resource('partners', PartnerController::class);
 
+    //tambahan
+
+    Route::get('/payment/{order_id}',
+        [CheckoutController::class, 'payment']
+    )->name('checkout.payment');
+
+    Route::get('/success/{order_id}',
+        [CheckoutController::class, 'success']
+    )->name('checkout.success');
 });
 
