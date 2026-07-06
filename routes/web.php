@@ -31,6 +31,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
+
+    //MIDTRANS
+    Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
+
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTE
@@ -99,6 +104,7 @@ Route::prefix('admin')
     // PARTNER CRUD
     Route::resource('partners', PartnerController::class);
 
+});
     //tambahan
 
     Route::get('/payment/{order_id}',
@@ -108,5 +114,4 @@ Route::prefix('admin')
     Route::get('/success/{order_id}',
         [CheckoutController::class, 'success']
     )->name('checkout.success');
-});
 
