@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Admin\JabatanController;
+use App\Http\Controllers\Admin\PengurusController;
 
 Route::get('/login', function () {
     return redirect()->route('admin.login');
@@ -103,6 +105,12 @@ Route::prefix('admin')
 
     // PARTNER CRUD
     Route::resource('partners', PartnerController::class);
+
+        // JABATAN CRUD
+    Route::resource('jabatan', JabatanController::class);
+
+    // PENGURUS CRUD
+    Route::resource('pengurus', PengurusController::class);
 
 });
     //tambahan

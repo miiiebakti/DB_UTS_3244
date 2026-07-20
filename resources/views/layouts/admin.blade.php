@@ -99,6 +99,44 @@
                 Partner
             </a>
 
+            <!-- JABATAN -->
+            <a href="{{ route('jabatan.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/jabatan*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 20h5V4H2v16h5m10 0v-6a2 2 0 00-2-2H9a2 2 0
+                        00-2 2v6m10 0H7">
+                    </path>
+
+                </svg>
+
+                Jabatan
+            </a>
+
+            <!-- PENGURUS -->
+               <a href="{{ route('pengurus.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/pengurus*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 20h5V4H2v16h5m10 0v-6a2 2 0 00-2-2H9a2 2 0
+                        00-2 2v6m10 0H7">
+                    </path>
+
+                </svg>
+
+                Pengurus
+            </a>
+
             <!-- EVENT -->
             <a href="{{ route('admin.events') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
