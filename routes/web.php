@@ -6,6 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\MidtransWebhookController;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -16,7 +18,6 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\JabatanController;
 use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\OrganizerController;
-use App\Http\Controllers\MidtransWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('logout');
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| GOOGLE LOGIN
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])
+    ->name('google.login');
+
+Route::get('/auth/google/callback', [GoogleController::class, 'callback'])
+    ->name('google.callback');
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +130,7 @@ Route::prefix('admin')
         Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])
             ->name('admin.events.destroy');
 
-});
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -139,4 +152,4 @@ Route::prefix('admin')
 
         Route::resource('organizers', OrganizerController::class);
 
-});
+    });

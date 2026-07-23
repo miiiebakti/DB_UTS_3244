@@ -12,6 +12,7 @@ class CheckoutController extends Controller
 {
     public function create(Event $event)
     {
+        session(['event_id' => $event->id]);
         $categories = Category::all();
 
         return view('checkout.create', compact('event', 'categories'));
