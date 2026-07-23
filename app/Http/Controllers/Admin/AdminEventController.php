@@ -6,16 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 
 
 
 class AdminEventController extends Controller
 {
-public function index()
+    public function index()
     {
-    $events = Event::all();
-    return view('admin.events', compact('events'));
+        if (Auth::user()->role == 'superadmin') {
+
+            $events = Event::all();
+
+        } else {
+
+            $events = Event::where('user_id', Auth::id())->get();
+
+        }
+
+        return view('admin.events', compact('events'));
     }
 
    public function create()
@@ -44,20 +54,48 @@ public function index()
             ->store('posters', 'public');
     }
 
+    $data['user_id'] = Auth::id();
+
     Event::create($data);
 
     return redirect('/admin/events');
 }
 public function edit($id)
 {
+    if (Auth::user()->role == 'superadmin') {
+
     $event = Event::findOrFail($id);
+
+} else {
+
+    $event = Event::where('id', $id)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
+
+}
+
+$categories = Category::all();
+
+return view('admin.edit-event', compact('event', 'categories'));
+
     $categories = Category::all();
 
     return view('admin.edit-event', compact('event', 'categories'));
 }
+
 public function update(Request $request, $id)
 {
+   if (Auth::user()->role == 'superadmin') {
+
     $event = Event::findOrFail($id);
+
+} else {
+
+    $event = Event::where('id', $id)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
+
+}
 
     $data = $request->validate([
         'category_id' => 'required|exists:categories,id',
@@ -86,9 +124,20 @@ public function update(Request $request, $id)
 
     return redirect('/admin/events');
 }
+
 public function destroy($id)
 {
-    $event = Event::findOrFail($id);
+    if (Auth::user()->role == 'superadmin') {
+
+        $event = Event::findOrFail($id);
+
+    } else {
+
+        $event = Event::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+    }
 
     if ($event->poster_path) {
         Storage::disk('public')

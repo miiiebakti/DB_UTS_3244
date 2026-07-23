@@ -8,23 +8,42 @@
         <!-- Header -->
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h1 class="text-3xl font-black">Dashboard Ringkasan</h1>
-                <p class="text-slate-500 font-medium">Selamat datang kembali, Admin!</p>
+            @if(Auth::user()->role == 'superadmin')
+                <h1 class="text-3xl font-black">Dashboard Super Admin</h1>
+                <p class="text-slate-500 font-medium">
+                    Selamat datang kembali, {{ Auth::user()->name }}!
+                </p>
+            @else
+                <h1 class="text-3xl font-black">Dashboard Organizer</h1>
+                <p class="text-slate-500 font-medium">
+                    Selamat datang kembali, {{ Auth::user()->name }}!
+                </p>
+            @endif
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
-                    <p class="font-bold">Admin Super</p>
-                    <p class="text-xs text-slate-400">Penyelenggara Utama</p>
+                    <p class="font-bold">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-slate-400">
+                        {{ ucfirst(Auth::user()->role) }}
+                    </p>
                 </div>
                 <div class="w-12 h-12 bg-white rounded-2xl shadow-sm border flex items-center justify-center p-1">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Super&background=6366f1&color=fff"
+                   <img src ="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff"
                         class="rounded-xl">
                 </div>
             </div>
         </header>
 
             <!-- Stats Grid -->
-     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        @if(Auth::user()->role == 'superadmin')
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-10">
+
+        @else
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+        @endif
          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
              <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4">
                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +52,15 @@
                      </path>
                  </svg>
              </div>
-             <p class="text-slate-400 text-sm font-bold uppercase mb-1">Total Pendapatan</p>
+            @if(Auth::user()->role == 'superadmin')
+                <p class="text-slate-400 text-sm font-bold uppercase mb-1">
+                    Total Pendapatan
+                </p>
+            @else
+                <p class="text-slate-400 text-sm font-bold uppercase mb-1">
+                    Pendapatan Saya
+                </p>
+            @endif
              <h3 class="text-2xl font-black">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
          </div>
          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -44,7 +71,11 @@
                      </path>
                  </svg>
              </div>
-             <p class="text-slate-400 text-sm font-bold uppercase mb-1">Tiket Terjual</p>
+            @if(Auth::user()->role == 'superadmin')
+                Total Tiket Terjual
+            @else
+                Tiket Event Saya
+            @endif
              <h3 class="text-2xl font-black">{{ number_format($ticketsSold, 0, ',', '.') }}</h3>
          </div>
          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -54,7 +85,12 @@
                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                  </svg>
              </div>
-             <p class="text-slate-400 text-sm font-bold uppercase mb-1">Event Aktif</p>
+
+            @if(Auth::user()->role == 'superadmin')
+                Event Aktif
+            @else
+                Event Saya
+            @endif
              <h3 class="text-2xl font-black">{{ $activeEvents }} Event</h3>
          </div>
          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -64,15 +100,39 @@
                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                  </svg>
              </div>
-             <p class="text-slate-400 text-sm font-bold uppercase mb-1">Pesanan Pending</p>
+            @if(Auth::user()->role == 'superadmin')
+                Pesanan Pending
+            @else
+                Pesanan Pending Saya
+            @endif
              <h3 class="text-2xl font-black">{{ $pendingOrders }} Pesanan</h3>
          </div>
 
+            @if(Auth::user()->role == 'superadmin')
+           <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <div class="w-12 h-12 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 20h5V4H2v16h5m10 0v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6m10 0H7M9 10h6M9 14h6">
+                    </path>
+                </svg>
+            </div>
+
+            <p class="text-slate-400 text-sm font-bold uppercase mb-1">
+                Total Organizer
+            </p>
+
+            <h3 class="text-2xl font-black">
+                {{ $totalOrganizers }}
+            </h3>
+        </div>
+            @endif
 
         </div>
 
         <!-- Latest Sales Table -->
-          <!-- Latest Sales Table -->
      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
          <div class="p-8 border-b flex justify-between items-center">
              <h3 class="font-black text-xl">Transaksi Terakhir</h3>

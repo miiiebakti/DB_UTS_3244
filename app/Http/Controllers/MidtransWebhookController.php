@@ -53,8 +53,6 @@ class MidtransWebhookController extends Controller
 
     private function processSuccess(Transaction $transaction)
     {
-        private function processSuccess(Transaction $transaction)
-    {
         $event = $transaction->event;
         
         // Jika tiket masih ada dan terhubung dengan data event, kurangi jumlahnya sebanyak 1
@@ -74,4 +72,4 @@ class MidtransWebhookController extends Controller
     }
 
     }
-}
+

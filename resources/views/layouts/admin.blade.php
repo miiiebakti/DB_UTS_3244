@@ -19,6 +19,10 @@
 </head>
 
 <body class="bg-slate-50 text-slate-900 flex min-h-screen">
+   
+    @php
+    use Illuminate\Support\Facades\Auth;
+    @endphp
 
     <!-- SIDEBAR -->
     <aside class="w-64 bg-indigo-900 text-indigo-100 flex flex-col p-6 space-y-8 sticky top-0 h-screen">
@@ -38,8 +42,14 @@
         <!-- MENU -->
         <nav class="flex-1 space-y-2">
 
-            <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4 px-2">
-                Main Menu
+           <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4 px-2">
+
+            @if(Auth::user()->role == 'superadmin')
+                SUPER ADMIN
+            @else
+                ORGANIZER
+            @endif
+
             </p>
 
             <!-- DASHBOARD -->
@@ -62,6 +72,8 @@
                 Dashboard
             </a>
 
+            @if(Auth::user()->role == 'superadmin')
+
             <!-- KATEGORI -->
             <a href="{{ route('categories.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
@@ -69,17 +81,18 @@
 
                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
-
-                    <path stroke-linecap="round" stroke-linejoin="round"
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
                         stroke-width="2"
                         d="M3 7h18M3 12h18M3 17h18">
                     </path>
-
                 </svg>
 
                 Kategori
             </a>
+            @endif
 
+            @if(Auth::user()->role == 'superadmin')
             <!-- PARTNER -->
             <a href="{{ route('partners.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
@@ -98,7 +111,9 @@
 
                 Partner
             </a>
-
+            @endif
+            
+            @if(Auth::user()->role == 'superadmin')
             <!-- JABATAN -->
             <a href="{{ route('jabatan.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
@@ -117,7 +132,9 @@
 
                 Jabatan
             </a>
+            @endif
 
+            @if(Auth::user()->role == 'superadmin')
             <!-- PENGURUS -->
                <a href="{{ route('pengurus.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
@@ -136,6 +153,28 @@
 
                 Pengurus
             </a>
+            @endif
+
+            @if(Auth::user()->role == 'superadmin')
+            <!-- ORGANIZER -->
+               <a href="{{ route('organizers.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/organizers*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 20h5V4H2v16h5m10 0v-6a2 2 0 00-2-2H9a2 2 0
+                        00-2 2v6m10 0H7">
+                    </path>
+
+                </svg>
+
+                Organizer
+            </a>
+            @endif
 
             <!-- EVENT -->
             <a href="{{ route('admin.events') }}"

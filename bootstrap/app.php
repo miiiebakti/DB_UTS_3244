@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias Middleware
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
         ]);
 
         // Mengecualikan webhook Midtrans dari CSRF

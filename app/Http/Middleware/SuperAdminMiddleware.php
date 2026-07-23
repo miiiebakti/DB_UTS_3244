@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class SuperAdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -15,11 +15,8 @@ class AdminMiddleware
             return redirect()->route('admin.login');
         }
 
-        if (! in_array(Auth::user()->role, [
-            'superadmin',
-            'organizer'
-        ])) {
-            abort(403);
+        if (Auth::user()->role !== 'superadmin') {
+            abort(403, 'Akses hanya untuk Super Admin.');
         }
 
         return $next($request);

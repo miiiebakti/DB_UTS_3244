@@ -5,12 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
   public function index(Request $request)
 {
     $query = Transaction::with('event');
+
+    // Jika login sebagai organizer,
+    // hanya tampilkan transaksi dari event miliknya
+    if (Auth::user()->role == 'organizer') {
+
+        $query->whereHas('event', function ($q) {
+            $q->where('user_id', Auth::id());
+        });
+
+    }
 
     // SEARCH
     if ($request->search) {
@@ -42,6 +53,6 @@ class TransactionController extends Controller
         ->paginate(20)
         ->withQueryString();
 
-   return view('admin.transactions.index', compact('transactions'));
+    return view('admin.transactions.index', compact('transactions'));
 }
 }

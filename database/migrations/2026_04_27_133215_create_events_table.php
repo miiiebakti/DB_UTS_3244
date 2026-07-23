@@ -21,6 +21,9 @@ return new class extends Migration
         $table->integer('stock');
         $table->string('poster_path')->nullable();
         $table->timestamps();
+        $table->foreignId('user_id')
+        ->constrained()
+        ->cascadeOnDelete();
 });
     }
 
