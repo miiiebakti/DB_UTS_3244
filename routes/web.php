@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MidtransWebhookController;
 
@@ -78,6 +79,11 @@ Route::get('/events/{event}', [EventController::class, 'show'])
 Route::get('/checkout', [EventController::class, 'checkout'])
     ->name('checkout');
 
+Route::middleware('auth')->group(function () {
+
+Route::post('/reviews/{event}', [ReviewController::class, 'store'])
+    ->name('reviews.store');
+
 Route::get('/ticket', [TicketController::class, 'ticket'])
     ->name('ticket');
 
@@ -93,6 +99,7 @@ Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])
     ->name('checkout.success');
 
+});
 /*
 |--------------------------------------------------------------------------
 | ADMIN + ORGANIZER
