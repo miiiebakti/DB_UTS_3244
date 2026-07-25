@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Admin\JabatanController;
 use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\OrganizerController;
 
+
 /*
 |--------------------------------------------------------------------------
 | LOGIN
@@ -29,6 +31,13 @@ use App\Http\Controllers\Admin\OrganizerController;
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN LOGIN
+|--------------------------------------------------------------------------
+*/
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -43,9 +52,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 });
 
+
 /*
 |--------------------------------------------------------------------------
-| GOOGLE LOGIN
+| GOOGLE LOGIN CUSTOMER
 |--------------------------------------------------------------------------
 */
 
@@ -55,6 +65,25 @@ Route::get('/auth/google', [GoogleController::class, 'redirect'])
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])
     ->name('google.callback');
 
+
+/*
+|--------------------------------------------------------------------------
+| LOGOUT CUSTOMER
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/customer/logout', function () {
+
+    Auth::logout();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('home');
+
+})->name('customer.logout');
+
+
 /*
 |--------------------------------------------------------------------------
 | MIDTRANS
@@ -63,15 +92,18 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback'])
 
 Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle']);
 
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home');
 
-Route::get('/event', [EventController::class, 'event'])->name('event');
+Route::get('/event', [EventController::class, 'event'])
+    ->name('event');
 
 Route::get('/events/{event}', [EventController::class, 'show'])
     ->name('events.show');
@@ -79,27 +111,63 @@ Route::get('/events/{event}', [EventController::class, 'show'])
 Route::get('/checkout', [EventController::class, 'checkout'])
     ->name('checkout');
 
+
+/*
+|--------------------------------------------------------------------------
+| CUSTOMER YANG SUDAH LOGIN
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth')->group(function () {
 
-Route::post('/reviews/{event}', [ReviewController::class, 'store'])
-    ->name('reviews.store');
+    /*
+    |--------------------------------------------------------------------------
+    | REVIEW
+    |--------------------------------------------------------------------------
+    */
 
-Route::get('/ticket', [TicketController::class, 'ticket'])
-    ->name('ticket');
+    Route::post('/reviews/{event}', [ReviewController::class, 'store'])
+        ->name('reviews.store');
 
-Route::get('/checkout/{event}', [CheckoutController::class, 'create'])
-    ->name('checkout.create');
 
-Route::post('/checkout/{event}', [CheckoutController::class, 'store'])
-    ->name('checkout.store');
+    /*
+    |--------------------------------------------------------------------------
+    | TICKET
+    |--------------------------------------------------------------------------
+    */
 
-Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])
-    ->name('checkout.payment');
+    Route::get('/ticket', [TicketController::class, 'ticket'])
+        ->name('ticket');
 
-Route::get('/success/{order_id}', [CheckoutController::class, 'success'])
-    ->name('checkout.success');
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHECKOUT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/checkout/{event}', [CheckoutController::class, 'create'])
+        ->name('checkout.create');
+
+    Route::post('/checkout/{event}', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])
+        ->name('checkout.payment');
+
+    Route::get('/success/{order_id}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
 });
+
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN + ORGANIZER
@@ -110,15 +178,32 @@ Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->group(function () {
 
-        // Dashboard
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard');
 
-        // Transaction
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSACTION
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/transactions', [TransactionController::class, 'index'])
             ->name('transactions.index');
 
-        // Event
+
+        /*
+        |--------------------------------------------------------------------------
+        | EVENT
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/events', [AdminEventController::class, 'index'])
             ->name('admin.events');
 
@@ -138,6 +223,7 @@ Route::prefix('admin')
             ->name('admin.events.destroy');
 
     });
+
 
 /*
 |--------------------------------------------------------------------------
