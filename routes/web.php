@@ -130,6 +130,13 @@ Route::prefix('admin')
         Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])
             ->name('admin.events.destroy');
 
+        Route::get(
+    '/certificate/{transaction}',
+    [TransactionController::class, 'certificate']
+)->name('transactions.certificate');
+
+Route::get('/admin/transactions/pdf', [TransactionController::class, 'exportPdf'])
+    ->name('transactions.pdf');
     });
 
 /*
