@@ -13,10 +13,10 @@
                     class="px-6 py-3 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white hover:border-indigo-600 hover:text-indigo-600 transition">
                     Ekspor Excel
                 </button>
-                <button
-                    class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">
-                    Unduh PDF
-                </button>
+                <a href="{{ route('transactions.pdf', request()->query()) }}"
+   class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">
+    Unduh PDF
+</a>
             </div>
         </header>
 
@@ -87,6 +87,7 @@
                             <th class="px-8 py-4">Tgl Transaksi</th>
                             <th class="px-8 py-4">Status</th>
                             <th class="px-8 py-4 text-right">Total Tagihan</th>
+                            <th class="px-8 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
                     
@@ -149,15 +150,36 @@
         </td>
 
         <td class="px-8 py-6 text-right font-black text-slate-900">
-            Rp {{ number_format($trx->total_price,0,',','.') }}
-        </td>
+    Rp {{ number_format($trx->total_price,0,',','.') }}
+</td>
+
+<td class="px-8 py-6 text-center">
+
+    @if(in_array($trx->status, ['Success', 'success', 'settlement']))
+
+        <a href="{{ route('transactions.certificate', $trx->id) }}"
+           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
+
+            📄 Certificate
+
+        </a>
+
+    @else
+
+        <span class="text-slate-400 text-sm">
+            Belum tersedia
+        </span>
+
+    @endif
+
+</td>
 
     </tr>
 
     @empty
 
     <tr>
-        <td colspan="6" class="text-center py-10 text-slate-400">
+        <td colspan="7" class="text-center py-10 text-slate-400">
             Belum ada transaksi
         </td>
     </tr>
