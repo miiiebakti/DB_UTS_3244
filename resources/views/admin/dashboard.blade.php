@@ -132,6 +132,30 @@
 
         </div>
 
+
+<!-- Grafik Dashboard -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+    <!-- Grafik Pendapatan -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+        <h3 class="text-xl font-black mb-6">
+            📈 Pendapatan per Bulan
+        </h3>
+
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+    <!-- Grafik Event -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+        <h3 class="text-xl font-black mb-6">
+            🎫 Event Dibuat per Bulan
+        </h3>
+
+        <canvas id="eventChart"></canvas>
+    </div>
+
+</div>
+
         <!-- Latest Sales Table -->
      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
          <div class="p-8 border-b flex justify-between items-center">
@@ -181,5 +205,157 @@
 
     </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const revenueData = @json($monthlyRevenue);
+const eventData = @json($monthlyEvents);
+
+const months = [
+    'Jan','Feb','Mar','Apr','Mei','Jun',
+    'Jul','Agu','Sep','Okt','Nov','Des'
+];
+
+// =============================
+// DATA PENDAPATAN
+// =============================
+
+let revenue = Array(12).fill(0);
+
+revenueData.forEach(item => {
+    revenue[item.month - 1] = item.total;
+});
+
+// =============================
+// DATA EVENT
+// =============================
+
+let events = Array(12).fill(0);
+
+eventData.forEach(item => {
+    events[item.month - 1] = item.total;
+});
+
+// =============================
+// GRAFIK PENDAPATAN
+// =============================
+
+new Chart(document.getElementById('revenueChart'), {
+
+    type: 'bar',
+
+    data: {
+
+        labels: months,
+
+        datasets: [{
+            label: 'Pendapatan',
+            data: revenue,
+            backgroundColor: '#6366F1',
+            borderRadius: 10,
+            borderSkipped: false
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                display: false
+            },
+
+            tooltip: {
+
+                callbacks: {
+
+                    label: function(context){
+
+                        return 'Rp ' + context.raw.toLocaleString('id-ID');
+
+                    }
+
+                }
+
+            }
+
+        },
+
+        scales: {
+
+            y: {
+
+                ticks: {
+
+                    callback:function(value){
+
+                        return 'Rp ' + value.toLocaleString('id-ID');
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+});
+
+// =============================
+// GRAFIK EVENT
+// =============================
+
+new Chart(document.getElementById('eventChart'), {
+
+    type:'line',
+
+    data:{
+
+        labels:months,
+
+        datasets:[{
+
+            label:'Jumlah Event',
+
+            data:events,
+
+            borderColor:'#6366F1',
+
+            backgroundColor:'rgba(99,102,241,.15)',
+
+            fill:true,
+
+            tension:.4,
+
+            pointRadius:5,
+
+            pointBackgroundColor:'#6366F1'
+
+        }]
+
+    },
+
+    options:{
+
+        responsive:true,
+
+        plugins:{
+
+            legend:{
+                display:false
+            }
+
+        }
+
+    }
+
+});
+
+</script>
 
 @endsection

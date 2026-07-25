@@ -37,7 +37,22 @@ class DashboardController extends Controller
                 ->get();
 
             $totalOrganizers = User::where('role', 'organizer')->count();
+
+            $monthlyRevenue = Transaction::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
+    ->whereYear('created_at', date('Y'))
+    ->whereIn('status', ['settlement', 'success'])
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
+
+$monthlyEvents = Event::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+    ->whereYear('created_at', date('Y'))
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
         }
+
+        
 
         // ===========================
         // ORGANIZER
@@ -75,15 +90,34 @@ class DashboardController extends Controller
                 ->get();
 
             $totalOrganizers = null;
+
+            $monthlyRevenue = Transaction::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
+    ->whereHas('event', function ($query) {
+        $query->where('user_id', Auth::id());
+    })
+    ->whereYear('created_at', date('Y'))
+    ->whereIn('status', ['settlement', 'success'])
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
+
+$monthlyEvents = Event::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+    ->where('user_id', Auth::id())
+    ->whereYear('created_at', date('Y'))
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
         }
 
         return view('admin.dashboard', compact(
-            'totalRevenue',
-            'ticketsSold',
-            'activeEvents',
-            'pendingOrders',
-            'recentTransactions',
-            'totalOrganizers'
-        ));
+    'totalRevenue',
+    'ticketsSold',
+    'activeEvents',
+    'pendingOrders',
+    'recentTransactions',
+    'totalOrganizers',
+    'monthlyRevenue',
+    'monthlyEvents'
+));
     }
 }
