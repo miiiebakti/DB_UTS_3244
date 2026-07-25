@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Event;
 use App\Models\Review;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Event;
 
 #[Fillable([
     'name',
@@ -18,7 +17,10 @@ use App\Models\Event;
     'password',
     'role'
 ])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden([
+    'password',
+    'remember_token'
+])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -36,13 +38,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relasi User -> Event
     public function events()
     {
         return $this->hasMany(Event::class);
     }
 
+    // Relasi User -> Review
     public function reviews()
     {
-    return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class);
     }
 }

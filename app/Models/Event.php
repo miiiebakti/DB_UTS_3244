@@ -18,13 +18,11 @@ class Event extends Model
         'poster_path'
     ];
 
-    // Relasi ke Category
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Relasi ke Organizer (User)
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -32,6 +30,6 @@ class Event extends Model
 
     public function reviews()
     {
-    return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class);
     }
 }

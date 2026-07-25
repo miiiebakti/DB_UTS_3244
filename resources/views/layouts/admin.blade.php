@@ -72,6 +72,25 @@
                 Dashboard
             </a>
 
+            <!-- REVIEW PENGUNJUNG -->
+            <a href="{{ route('admin.reviews') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/reviews') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 10h8M8 14h5m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
+                    </path>
+
+                </svg>
+
+                <span>Review Pengunjung</span>
+
+            </a>
+
             @if(Auth::user()->role == 'superadmin')
 
             <!-- KATEGORI -->

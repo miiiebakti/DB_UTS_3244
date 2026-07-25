@@ -3,19 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    public function redirect()
+    public function redirect(Request $request)
     {
-        // Simpan event yang sedang dibuka
-        if (request()->has('event_id')) {
-            session(['event_id' => request('event_id')]);
+        if ($request->has('event_id')) {
+            session([
+                'event_id' => $request->event_id
+            ]);
         }
 
-        // Tampilkan pilihan akun Google
+        if ($request->has('login_action')) {
+            session([
+                'login_action' => $request->login_action
+            ]);
+        }
+
         return Socialite::driver('google')
             ->with([
                 'prompt' => 'select_account'
@@ -29,35 +36,102 @@ class GoogleController extends Controller
             ->stateless()
             ->user();
 
-        // Cari user berdasarkan email Google.
-        // Kalau belum ada, buat user baru.
-        $user = User::updateOrCreate(
-            [
-                'email' => $googleUser->getEmail(),
-            ],
-            [
-                'name' => $googleUser->getName(),
-                'password' => bcrypt(str()->random(16)),
-            ]
-        );
+        $user = User::where(
+            'email',
+            $googleUser->getEmail()
+        )->first();
 
-        // Login sebagai user Google
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA EMAIL SUDAH DIPAKAI ADMIN / ORGANIZER
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user && in_array($user->role, [
+            'superadmin',
+            'organizer'
+        ])) {
+
+            return redirect()
+                ->route('google.login')
+                ->with(
+                    'error',
+                    'Akun ini merupakan akun admin/organizer. Silakan gunakan akun customer.'
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA USER BELUM ADA
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$user) {
+
+            $user = User::create([
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'password' => bcrypt(str()->random(16)),
+                'role' => 'customer',
+            ]);
+
+        } else {
+
+            $user->update([
+                'name' => $googleUser->getName(),
+                'role' => 'customer',
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOGIN CUSTOMER
+        |--------------------------------------------------------------------------
+        */
+
         Auth::login($user);
 
-        // Simpan data customer untuk kebutuhan checkout
         session([
-            'customer_name' => $googleUser->getName(),
-            'customer_email' => $googleUser->getEmail(),
+            'customer_name' => $user->name,
+            'customer_email' => $user->email,
         ]);
 
-        // Kembali ke event yang tadi dibuka
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA LOGIN UNTUK CHECKOUT
+        |--------------------------------------------------------------------------
+        */
+
         $eventId = session('event_id');
 
         if ($eventId) {
+
             session()->forget('event_id');
 
-            return redirect()->route('events.show', $eventId);
+            return redirect()
+                ->route('checkout.create', $eventId);
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA LOGIN UNTUK REVIEW
+        |--------------------------------------------------------------------------
+        */
+
+        $loginAction = session('login_action');
+
+        if ($loginAction === 'review') {
+
+            session()->forget('login_action');
+
+            return redirect()
+                ->route('events.show', session('review_event_id'));
+        }
+
 
         return redirect()->route('home');
     }

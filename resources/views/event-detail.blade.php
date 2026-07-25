@@ -2,317 +2,513 @@
 
 @section('content')
 <main class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <!-- Left: Poster -->
-        <div class="lg:col-span-1">
-            <div class="sticky top-32">
-                <img
-                    src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
+
+    <!-- Left: Poster -->
+    <div class="lg:col-span-1">
+        <div class="sticky top-32">
+
+            <img
+                src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
                     ? asset('storage/'.$event->poster_path)
                     : 'https://placehold.co/600x800' }}"
-                    alt="{{ $event->title }}"
-                    class="w-full aspect-[3/4] object-cover rounded-[2rem] shadow-2xl border-8 border-white">
-                <div class="mt-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
-                    <h4 class="font-bold mb-4">Penyelenggara</h4>
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
-                            AB</div>
-                        <div>
-                            <p class="font-bold text-slate-800">ABP Productions</p>
-                            <p class="text-xs text-slate-500">Verified Organizer</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                alt="{{ $event->title }}"
+                class="w-full aspect-[3/4] object-cover rounded-[2rem] shadow-2xl border-8 border-white">
 
-        <!-- Right: Details -->
-        <div class="lg:col-span-2 space-y-12">
-            <div class="space-y-4">
-                <span
-                    class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">{{ $event->category->name }}</span>
-                <h1 class="text-4xl md:text-5xl font-black leading-tight">{{ $event->title }}</h1>
-                <div class="flex flex-wrap gap-6 text-slate-500 font-medium">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        <span>{{ \Carbon\Carbon::parse($event->date)->format('d M Y H:i') }}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <span>{{ $event->location }}</span>
-                    </div>
-                </div>
-            </div>
+            <div class="mt-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
 
-            <div class="prose prose-slate max-w-none">
-                <h3 class="text-2xl font-bold mb-4">Deskripsi Event</h3>
-                <p class="text-lg text-slate-600 leading-relaxed">
-                   {{ $event->description }}
-                </p>
-            </div>
+                <h4 class="font-bold mb-4">
+                    Penyelenggara
+                </h4>
 
-            <div
-                class="bg-indigo-600 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-4">
+
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                        AB
+                    </div>
+
                     <div>
-                        <p class="text-indigo-200 font-bold uppercase tracking-widest text-sm mb-2">Harga Tiket</p>
-                        <h2 class="text-5xl font-black">Rp {{ number_format($event->price,0,',','.') }} <span class="text-lg font-medium text-indigo-200">/
-                                orang</span></h2>
-                        <p class="mt-4 text-indigo-100 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Sisa stok: <span class="font-bold underline">{{ $event->stock }} Tiket lagi!</span>
+                        <p class="font-bold text-slate-800">
+                            ABP Productions
+                        </p>
+
+                        <p class="text-xs text-slate-500">
+                            Verified Organizer
                         </p>
                     </div>
-                    <div>
-						
-                        <a href="{{ route('checkout.create', $event->id) }}"
-                             class="inline-block px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-xl">
-                            Pesan Sekarang
-                            </a>
-                    </div>
+
                 </div>
-                <!-- Decoration -->
-                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white opacity-10 rounded-full"></div>
-                <div class="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 opacity-20 rounded-full"></div>
             </div>
 
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Kebijakan Tiket</h3>
-                <ul class="space-y-3 text-slate-500">
-                    <li class="flex items-start gap-2">
-                        <svg class="w-5 h-5 text-green-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
-                        E-Ticket akan dikirimkan otomatis setelah pembayaran berhasil.
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <svg class="w-5 h-5 text-green-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
-                        Tiket dapat discan di pintu masuk (Check-in).
-                    </li>
-                    <li class="flex items-start gap-2 text-rose-500">
-                        <svg class="w-5 h-5 text-rose-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Tiket yang sudah dibeli tidak dapat direfund.
-                    </li>
-                </ul>
+        </div>
+    </div>
+
+
+    <!-- Right: Details -->
+    <div class="lg:col-span-2 space-y-12">
+
+        <!-- EVENT INFO -->
+        <div class="space-y-4">
+
+            <span class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">
+                {{ $event->category->name }}
+            </span>
+
+            <h1 class="text-4xl md:text-5xl font-black leading-tight">
+                {{ $event->title }}
+            </h1>
+
+            <div class="flex flex-wrap gap-6 text-slate-500 font-medium">
+
+                <!-- Date -->
+                <div class="flex items-center gap-2">
+
+                    <svg class="w-5 h-5 text-indigo-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+
+                    </svg>
+
+                    <span>
+                        {{ \Carbon\Carbon::parse($event->date)->format('d M Y H:i') }}
+                    </span>
+
+                </div>
+
+
+                <!-- Location -->
+                <div class="flex items-center gap-2">
+
+                    <svg class="w-5 h-5 text-indigo-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                        </path>
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                        </path>
+
+                    </svg>
+
+                    <span>
+                        {{ $event->location }}
+                    </span>
+
+                </div>
+
             </div>
 
-           <!-- REVIEW -->
-<div class="mt-12 w-full">
+        </div>
 
-    <div class="flex items-center justify-between mb-6">
 
-        <div>
-            <h2 class="text-2xl font-bold">
-                Review Pengunjung
-            </h2>
+        <!-- DESCRIPTION -->
+        <div class="prose prose-slate max-w-none">
 
-            <p class="text-gray-500 mt-1">
-                ⭐ {{ $averageRating }}/5 • {{ $totalReview }} Ulasan
+            <h3 class="text-2xl font-bold mb-4">
+                Deskripsi Event
+            </h3>
+
+            <p class="text-lg text-slate-600 leading-relaxed">
+                {{ $event->description }}
             </p>
+
+        </div>
+
+
+        <!-- PRICE -->
+        <div class="bg-indigo-600 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
+
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+
+                <div>
+
+                    <p class="text-indigo-200 font-bold uppercase tracking-widest text-sm mb-2">
+                        Harga Tiket
+                    </p>
+
+                    <h2 class="text-5xl font-black">
+
+                        Rp {{ number_format($event->price, 0, ',', '.') }}
+
+                        <span class="text-lg font-medium text-indigo-200">
+                            / orang
+                        </span>
+
+                    </h2>
+
+                    <p class="mt-4 text-indigo-100 flex items-center gap-2">
+
+                        <svg class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+
+                        </svg>
+
+                        Sisa stok:
+
+                        <span class="font-bold underline">
+                            {{ $event->stock }} Tiket lagi!
+                        </span>
+
+                    </p>
+
+                </div>
+
+
+                <!-- CHECKOUT -->
+                <div>
+
+                    <a
+                        href="{{ route('checkout.create', $event->id) }}"
+                        class="inline-block px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-xl">
+
+                        Pesan Sekarang
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Decoration -->
+            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white opacity-10 rounded-full"></div>
+
+            <div class="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 opacity-20 rounded-full"></div>
+
+        </div>
+
+
+        <!-- TICKET POLICY -->
+        <div class="space-y-4">
+
+            <h3 class="text-xl font-bold">
+                Kebijakan Tiket
+            </h3>
+
+            <ul class="space-y-3 text-slate-500">
+
+                <li class="flex items-start gap-2">
+
+                    <svg class="w-5 h-5 text-green-500 mt-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M5 13l4 4L19 7">
+                        </path>
+
+                    </svg>
+
+                    E-Ticket akan dikirimkan otomatis setelah pembayaran berhasil.
+
+                </li>
+
+
+                <li class="flex items-start gap-2">
+
+                    <svg class="w-5 h-5 text-green-500 mt-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M5 13l4 4L19 7">
+                        </path>
+
+                    </svg>
+
+                    Tiket dapat discan di pintu masuk (Check-in).
+
+                </li>
+
+
+                <li class="flex items-start gap-2 text-rose-500">
+
+                    <svg class="w-5 h-5 text-rose-500 mt-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+
+                    </svg>
+
+                    Tiket yang sudah dibeli tidak dapat direfund.
+
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- REVIEW -->
+        <div class="mt-12 w-full">
+
+            <div class="flex items-center justify-between mb-6">
+
+                <h2 class="text-2xl font-bold">
+                    Review Pengunjung
+                </h2>
+
+            </div>
+
+
+            <!-- SUCCESS MESSAGE -->
+            @if(session('success'))
+
+                <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3 mb-5">
+                    {{ session('success') }}
+                </div>
+
+            @endif
+
+
+            <!-- ERROR MESSAGE -->
+            @if(session('error'))
+
+                <div class="bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3 mb-5">
+                    {{ session('error') }}
+                </div>
+
+            @endif
+
+
+            <!-- VALIDATION ERROR -->
+            @if($errors->any())
+
+                <div class="bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3 mb-5">
+
+                    <ul class="list-disc list-inside">
+
+                        @foreach($errors->all() as $error)
+
+                            <li>
+                                {{ $error }}
+                            </li>
+
+                        @endforeach
+
+                    </ul>
+
+                </div>
+
+            @endif
+
+
+            <!-- CUSTOMER SUDAH LOGIN -->
+            @auth
+
+                <form
+                    action="{{ route('reviews.store', $event->id) }}"
+                    method="POST"
+                    class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+                    @csrf
+
+
+                    <!-- EMAIL -->
+                    <div class="mb-4">
+
+                        <label class="font-semibold">
+                            Email
+                        </label>
+
+                        <input
+                            type="text"
+                            value="{{ auth()->user()->email }}"
+                            class="w-full border rounded-lg p-3 mt-2 bg-gray-100"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- RATING -->
+                    <div class="mb-4">
+
+                        <label class="font-semibold">
+                            Rating
+                        </label>
+
+                        <select
+                            name="rating"
+                            class="w-full border rounded-lg p-3 mt-2"
+                            required>
+
+                            <option value="5">
+                                ⭐⭐⭐⭐⭐ (5)
+                            </option>
+
+                            <option value="4">
+                                ⭐⭐⭐⭐ (4)
+                            </option>
+
+                            <option value="3">
+                                ⭐⭐⭐ (3)
+                            </option>
+
+                            <option value="2">
+                                ⭐⭐ (2)
+                            </option>
+
+                            <option value="1">
+                                ⭐ (1)
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- REVIEW -->
+                    <div class="mb-4">
+
+                        <label class="font-semibold">
+                            Ulasan
+                        </label>
+
+                        <textarea
+                            name="review"
+                            rows="5"
+                            class="w-full border rounded-lg p-3 mt-2"
+                            placeholder="Bagikan pengalamanmu mengikuti event ini..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+                    <button
+                        type="submit"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
+
+                        Kirim Review
+
+                    </button>
+
+                </form>
+
+
+            <!-- CUSTOMER BELUM LOGIN -->
+            @else
+
+                <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center">
+
+                    <h3 class="font-semibold text-lg mb-2">
+                        Ingin memberikan review?
+                    </h3>
+
+                    <p class="text-gray-500 mb-5">
+                        Login terlebih dahulu untuk memberikan ulasan.
+                    </p>
+
+                    <a
+                        href="{{ route('google.login', [
+                            'event_id' => $event->id,
+                            'login_action' => 'review'
+                        ]) }}"
+                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
+
+                        Login dengan Google
+
+                    </a>
+
+                </div>
+
+            @endauth
+
+
+            <!-- DAFTAR REVIEW -->
+            @if(isset($reviews) && $reviews->count())
+
+                <div class="space-y-4">
+
+                    @foreach($reviews as $review)
+
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+
+                            <div class="flex items-center justify-between mb-3">
+
+                                <div>
+
+                                    <p class="font-bold text-slate-800">
+                                        {{ $review->user->name ?? 'Customer' }}
+                                    </p>
+
+                                    <p class="text-xs text-slate-400">
+                                        {{ $review->created_at->format('d M Y') }}
+                                    </p>
+
+                                </div>
+
+                                <div class="text-yellow-500">
+
+                                    {{ str_repeat('⭐', $review->rating) }}
+
+                                </div>
+
+                            </div>
+
+                            <p class="text-slate-600">
+                                {{ $review->review }}
+                            </p>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            @else
+
+                <div class="bg-slate-50 rounded-2xl p-6 text-center text-slate-500">
+                    Belum ada review untuk event ini.
+                </div>
+
+            @endif
+
         </div>
 
     </div>
 
+</main>
 
-    @if(session('success'))
-
-        <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3 mb-5">
-            {{ session('success') }}
-        </div>
-
-    @endif
-
-
-    {{-- ========================= --}}
-    {{-- SUDAH LOGIN --}}
-    {{-- ========================= --}}
-
-    @auth
-
-        <form
-            action="{{ route('reviews.store', $event->id) }}"
-            method="POST"
-            class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-
-            @csrf
-
-            {{-- EMAIL CUSTOMER --}}
-            <div class="mb-4">
-
-                <label class="font-semibold">
-                    Email
-                </label>
-
-                <input
-                    type="text"
-                    value="{{ auth()->user()->email }}"
-                    class="w-full border rounded-lg p-3 mt-2 bg-gray-100"
-                    readonly>
-
-            </div>
-
-
-            {{-- RATING --}}
-            <div class="mb-4">
-
-                <label class="font-semibold">
-                    Rating
-                </label>
-
-                <select
-                    name="rating"
-                    class="w-full border rounded-lg p-3 mt-2">
-
-                    <option value="5">⭐⭐⭐⭐⭐ (5)</option>
-                    <option value="4">⭐⭐⭐⭐ (4)</option>
-                    <option value="3">⭐⭐⭐ (3)</option>
-                    <option value="2">⭐⭐ (2)</option>
-                    <option value="1">⭐ (1)</option>
-
-                </select>
-
-            </div>
-
-
-            {{-- ULASAN --}}
-            <div class="mb-4">
-
-                <label class="font-semibold">
-                    Ulasan
-                </label>
-
-                <textarea
-                    name="review"
-                    rows="5"
-                    class="w-full border rounded-lg p-3 mt-2"
-                    placeholder="Bagikan pengalamanmu mengikuti event ini..."
-                    required></textarea>
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
-
-                Kirim Review
-
-            </button>
-
-        </form>
-
-
-    {{-- ========================= --}}
-    {{-- BELUM LOGIN --}}
-    {{-- ========================= --}}
-
-    @else
-
-        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center">
-
-            <h3 class="font-semibold text-lg mb-2">
-                Ingin memberikan review?
-            </h3>
-
-            <p class="text-gray-500 mb-5">
-                Login terlebih dahulu untuk memberikan ulasan.
-            </p>
-
-            <a
-                href="{{ route('google.login', ['event_id' => $event->id]) }}"
-                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
-
-                Login dengan Google
-
-            </a>
-
-        </div>
-
-    @endauth
-
-
-    {{-- ========================= --}}
-    {{-- SEMUA REVIEW --}}
-    {{-- ========================= --}}
-
-    <h3 class="text-xl font-bold mb-4">
-        Semua Ulasan
-    </h3>
-
-
-    @forelse($reviews as $review)
-
-        <div class="bg-white border rounded-xl shadow-sm p-5 mb-4">
-
-            <div class="flex justify-between">
-
-                <div>
-
-                    <h4 class="font-bold">
-
-                        {{ $review->email ?? $review->name ?? 'Pengunjung' }}
-
-                    </h4>
-
-                    <small class="text-gray-500">
-
-                        {{ $review->created_at->format('d M Y') }}
-
-                    </small>
-
-                </div>
-
-
-                <div class="text-yellow-500">
-
-                    {{ str_repeat('⭐', $review->rating) }}
-
-                </div>
-
-            </div>
-
-
-            <p class="mt-3">
-
-                {{ $review->review }}
-
-            </p>
-
-        </div>
-
-    @empty
-
-        <div class="bg-gray-100 rounded-xl p-6 text-center text-gray-500">
-
-            Belum ada ulasan.
-
-        </div>
-
-    @endforelse
-
-</div>
-         </div>
-        </div>
-        </main>    
-
-    @endsection
+@endsection

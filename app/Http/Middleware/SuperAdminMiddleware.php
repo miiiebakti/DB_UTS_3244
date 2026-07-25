@@ -9,14 +9,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SuperAdminMiddleware
 {
-    public function handle(Request $request, Closure $next): Response
-    {
+    public function handle(
+        Request $request,
+        Closure $next
+    ): Response {
+
         if (!Auth::check()) {
-            return redirect()->route('admin.login');
+
+            return redirect()
+                ->route('admin.login');
         }
 
         if (Auth::user()->role !== 'superadmin') {
-            abort(403, 'Akses hanya untuk Super Admin.');
+
+            abort(403);
         }
 
         return $next($request);

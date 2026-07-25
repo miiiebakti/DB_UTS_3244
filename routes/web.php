@@ -10,6 +10,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MidtransWebhookController;
+use App\Http\Controllers\OrganizerProfileController;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -20,16 +21,17 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\JabatanController;
 use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\OrganizerController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN
+| LOGIN CUSTOMER
 |--------------------------------------------------------------------------
 */
 
 Route::get('/login', function () {
-    return redirect()->route('admin.login');
+    return redirect()->route('google.login');
 })->name('login');
 
 
@@ -41,6 +43,11 @@ Route::get('/login', function () {
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
+    // /admin langsung menuju halaman login admin
+    Route::get('/', function () {
+        return redirect()->route('admin.login');
+    });
+
     Route::get('/login', [AuthController::class, 'showLogin'])
         ->name('login');
 
@@ -49,7 +56,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
-
 });
 
 
@@ -114,15 +120,25 @@ Route::get('/checkout', [EventController::class, 'checkout'])
 
 /*
 |--------------------------------------------------------------------------
-| CUSTOMER YANG SUDAH LOGIN
+| PROFIL ORGANIZER - PUBLIC
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::get('/organizer/{user}', [OrganizerProfileController::class, 'show'])
+    ->name('organizer.profile');
+
+
+/*
+|--------------------------------------------------------------------------
+| CUSTOMER
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('customer')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | REVIEW
+    | REVIEW CUSTOMER
     |--------------------------------------------------------------------------
     */
 
@@ -190,12 +206,28 @@ Route::prefix('admin')
 
         /*
         |--------------------------------------------------------------------------
+        | REVIEW PENGUNJUNG
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/reviews', [AdminReviewController::class, 'index'])
+            ->name('admin.reviews');
+
+
+        /*
+        |--------------------------------------------------------------------------
         | TRANSACTION
         |--------------------------------------------------------------------------
         */
 
         Route::get('/transactions', [TransactionController::class, 'index'])
             ->name('transactions.index');
+
+        Route::get('/transactions/pdf', [TransactionController::class, 'exportPdf'])
+            ->name('transactions.pdf');
+
+        Route::get('/certificate/{transaction}', [TransactionController::class, 'certificate'])
+            ->name('transactions.certificate');
 
 
         /*
@@ -222,13 +254,6 @@ Route::prefix('admin')
         Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])
             ->name('admin.events.destroy');
 
-        Route::get(
-    '/certificate/{transaction}',
-    [TransactionController::class, 'certificate']
-)->name('transactions.certificate');
-
-Route::get('/admin/transactions/pdf', [TransactionController::class, 'exportPdf'])
-    ->name('transactions.pdf');
     });
 
 

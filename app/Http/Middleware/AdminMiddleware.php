@@ -9,16 +9,22 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    public function handle(Request $request, Closure $next): Response
-    {
+    public function handle(
+        Request $request,
+        Closure $next
+    ): Response {
+
         if (!Auth::check()) {
-            return redirect()->route('admin.login');
+
+            return redirect()
+                ->route('admin.login');
         }
 
-        if (! in_array(Auth::user()->role, [
+        if (!in_array(Auth::user()->role, [
             'superadmin',
             'organizer'
         ])) {
+
             abort(403);
         }
 
