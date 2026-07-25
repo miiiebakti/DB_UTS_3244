@@ -9,21 +9,29 @@ use App\Models\Partner;
 
 class HomeController extends Controller
 {
-   public function index(Request $request)
-{
-    $categories = Category::all();
+    public function index(Request $request)
+    {
+        // Ambil semua kategori
+        $categories = Category::all();
 
-    $events = Event::query();
+        // Query event
+        $events = Event::query();
 
-    if ($request->category) {
-        if ($request->category) {
-    $events->where('category_id', $request->category);
-}
+        // Filter berdasarkan kategori jika dipilih
+        if ($request->filled('category')) {
+            $events->where('category_id', $request->category);
+        }
+
+        // Ambil semua event
+        $events = $events->get();
+
+        // Ambil semua partner
+        $partners = Partner::all();
+
+        return view('welcome', compact(
+            'events',
+            'categories',
+            'partners'
+        ));
     }
-
-    $events = $events->get();
-    $partners = Partner::all();
-    
-    return view('welcome', compact('events', 'categories', 'partners'));
-}
 }

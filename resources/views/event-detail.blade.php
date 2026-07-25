@@ -5,12 +5,12 @@
         <!-- Left: Poster -->
         <div class="lg:col-span-1">
             <div class="sticky top-32">
-                <img src="{{ ($event->poster_path &&
-                    Storage::disk('public')->exists($event->poster_path))
+                <img
+                    src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
                     ? asset('storage/'.$event->poster_path)
-                    : 'https://placehold.co/200x600' }}"
+                    : 'https://placehold.co/600x800' }}"
                     alt="{{ $event->title }}"
-                    class="w-full rounded-[2.5rem] shadow-2xl border-8 border-white">
+                    class="w-full aspect-[3/4] object-cover rounded-[2rem] shadow-2xl border-8 border-white">
                 <div class="mt-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
                     <h4 class="font-bold mb-4">Penyelenggara</h4>
                     <div class="flex items-center gap-4">
@@ -115,6 +115,129 @@
                     </li>
                 </ul>
             </div>
+
+            <!-- REVIEW -->
+        <div class="mt-12 w-full">
+
+            <div class="flex items-center justify-between mb-6">
+
+                <div>
+                    <h2 class="text-2xl font-bold">
+                        Review Pengunjung
+                    </h2>
+
+                    <p class="text-gray-500 mt-1">
+                        ⭐ {{ $averageRating }}/5 • {{ $totalReview }} Ulasan
+                    </p>
+                </div>
+
+            </div>
+
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3 mb-5">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <form action="{{ route('reviews.store',$event->id) }}" method="POST"
+                class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+                @csrf
+
+                <div class="mb-4">
+                    <label class="font-semibold">Nama</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="w-full border rounded-lg p-3 mt-2"
+                        placeholder="Masukkan nama"
+                        required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Rating</label>
+
+                    <select
+                        name="rating"
+                        class="w-full border rounded-lg p-3 mt-2">
+
+                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4)</option>
+                        <option value="3">⭐⭐⭐ (3)</option>
+                        <option value="2">⭐⭐ (2)</option>
+                        <option value="1">⭐ (1)</option>
+
+                    </select>
+                </div>
+
+                <div class="mb-4">
+
+                    <label class="font-semibold">Ulasan</label>
+
+                    <textarea
+                        name="review"
+                        rows="5"
+                        class="w-full border rounded-lg p-3 mt-2"
+                        placeholder="Bagikan pengalamanmu mengikuti event ini..."
+                        required></textarea>
+
+                </div>
+
+                <button
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
+
+                    Kirim Review
+
+                </button>
+
+            </form>
+
+            <h3 class="text-xl font-bold mb-4">
+                Semua Ulasan
+            </h3>
+
+            @forelse($reviews as $review)
+
+                <div class="bg-white border rounded-xl shadow-sm p-5 mb-4">
+
+                    <div class="flex justify-between">
+
+                        <div>
+
+                            <h4 class="font-bold">
+                                {{ $review->name }}
+                            </h4>
+
+                            <small class="text-gray-500">
+                                {{ $review->created_at->format('d M Y') }}
+                            </small>
+
+                        </div>
+
+                        <div class="text-yellow-500">
+                            {{ str_repeat('⭐',$review->rating) }}
+                        </div>
+
+                    </div>
+
+                    <p class="mt-3">
+                        {{ $review->review }}
+                    </p>
+
+                </div>
+
+            @empty
+
+                <div class="bg-gray-100 rounded-xl p-6 text-center text-gray-500">
+                    Belum ada ulasan.
+                </div>
+
+            @endforelse
+
         </div>
-    </main>
-@endsection
+         </div>
+        </div>
+        </main>    
+
+    @endsection
