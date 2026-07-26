@@ -97,8 +97,10 @@ class CheckoutController extends Controller
             ], 422);
         }
 
-$ticketPrice = (float) $currentTicket->price;
-        $serviceFee = 5000;
+        $ticketPrice = (float) $currentTicket->price;
+
+        // Jika event gratis, service fee juga gratis
+        $serviceFee = $ticketPrice > 0 ? 5000 : 0;
 
         $subtotal = $ticketPrice + $serviceFee;
 
@@ -131,12 +133,14 @@ $ticketPrice = (float) $currentTicket->price;
 
     public function store(Request $request, Event $event)
     {
+        
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
             'voucher_code' => 'nullable|string|max:50',
         ]);
+        
 
         if ($event->stock <= 0) {
 
@@ -157,7 +161,9 @@ $ticketPrice = (float) $currentTicket->price;
         }
 
         $ticketPrice = (float) $currentTicket->price;
-        $serviceFee = 5000;
+
+        // Jika event gratis, service fee juga gratis
+        $serviceFee = $ticketPrice > 0 ? 5000 : 0;
 
         $discount = 0;
         $voucher = null;
@@ -267,13 +273,55 @@ $ticketPrice = (float) $currentTicket->price;
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'total_price' => $totalPrice,
-            'status' => 'pending',
+            'status' => $totalPrice == 0 ? 'success' : 'pending',
         ]);
 
         if ($voucher) {
 
             $voucher->increment('used');
 
+        }
+
+                /*
+        |--------------------------------------------------------------------------
+        | BYPASS MIDTRANS UNTUK EVENT GRATIS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($totalPrice == 0) {
+
+            // Kurangi stok event
+            if ($event->stock > 0) {
+                $event->decrement('stock');
+            }
+
+            // Tambah tiket terjual
+            if ($currentTicket) {
+                $currentTicket->increment('sold');
+            }
+
+            // Kirim E-Ticket
+            try {
+
+                \Illuminate\Support\Facades\Mail::to(
+                    $transaction->customer_email
+                )->send(
+                    new \App\Mail\EventTicketMail($transaction)
+                );
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'Gagal mengirim email E-Ticket: ' .
+                    $e->getMessage()
+                );
+
+            }
+
+            return redirect()->route(
+                'checkout.success',
+                $transaction->order_id
+            );
         }
 
         \Midtrans\Config::$serverKey =
@@ -347,6 +395,7 @@ $ticketPrice = (float) $currentTicket->price;
             ->where('order_id', $order_id)
             ->firstOrFail();
 
+
         return view(
             'checkout.payment',
             compact(
@@ -358,11 +407,26 @@ $ticketPrice = (float) $currentTicket->price;
 
     public function success($order_id)
     {
+
         $categories = Category::all();
 
         $transaction = Transaction::with('event')
             ->where('order_id', $order_id)
             ->firstOrFail();
+
+
+            // Event gratis tidak perlu cek Midtrans
+            if ($transaction->total_price == 0) {
+
+                return view(
+                    'checkout.success',
+                    compact(
+                        'transaction',
+                        'categories'
+                    )
+                );
+
+            }
 
         \Midtrans\Config::$serverKey =
             env('MIDTRANS_SERVER_KEY');

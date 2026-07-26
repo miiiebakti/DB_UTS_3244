@@ -6,14 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\TicketPrice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketPriceController extends Controller
 {
     public function index()
     {
-        $ticketPrices = TicketPrice::with('event')
-            ->latest()
-            ->get();
+       if (Auth::user()->role == 'superadmin') {
+
+            $ticketPrices = TicketPrice::with('event')
+                ->latest()
+                ->get();
+
+        } else {
+
+            $ticketPrices = TicketPrice::with('event')
+                ->whereHas('event', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->latest()
+                ->get();
+
+        }
 
         return view(
             'admin.ticket_prices.index',
@@ -23,7 +37,17 @@ class TicketPriceController extends Controller
 
     public function create()
     {
-        $events = Event::orderBy('title')->get();
+       if (Auth::user()->role == 'superadmin') {
+
+    $events = Event::orderBy('title')->get();
+
+        } else {
+
+            $events = Event::where('user_id', Auth::id())
+                ->orderBy('title')
+                ->get();
+
+        }
 
         return view(
             'admin.ticket_prices.create',
@@ -43,6 +67,18 @@ class TicketPriceController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
+        if (Auth::user()->role != 'superadmin') {
+
+            $event = Event::where('id', $request->event_id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if (!$event) {
+                abort(403);
+            }
+
+        }
+
         TicketPrice::create([
             'event_id' => $request->event_id,
             'name' => $request->name,
@@ -61,7 +97,24 @@ class TicketPriceController extends Controller
 
     public function edit(TicketPrice $ticketPrice)
     {
-        $events = Event::orderBy('title')->get();
+        if (
+    Auth::user()->role != 'superadmin' &&
+            $ticketPrice->event->user_id != Auth::id()
+        ) {
+            abort(403);
+        }
+
+     if (Auth::user()->role == 'superadmin') {
+
+    $events = Event::orderBy('title')->get();
+
+        } else {
+
+            $events = Event::where('user_id', Auth::id())
+                ->orderBy('title')
+                ->get();
+
+        }
 
         return view(
             'admin.ticket_prices.edit',
@@ -73,6 +126,14 @@ class TicketPriceController extends Controller
         Request $request,
         TicketPrice $ticketPrice
     ) {
+
+        if (
+            Auth::user()->role != 'superadmin' &&
+            $ticketPrice->event->user_id != Auth::id()
+        ) {
+            abort(403);
+        }
+
         $request->validate([
             'event_id' => 'required|exists:events,id',
             'name' => 'required|string|max:100',
@@ -100,6 +161,13 @@ class TicketPriceController extends Controller
 
     public function destroy(TicketPrice $ticketPrice)
     {
+        if (
+            Auth::user()->role != 'superadmin' &&
+            $ticketPrice->event->user_id != Auth::id()
+        ) {
+            abort(403);
+        }
+
         $ticketPrice->delete();
 
         return redirect()

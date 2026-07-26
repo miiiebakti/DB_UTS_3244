@@ -173,7 +173,7 @@
                     </span>
 
                     <span>
-                        Rp 5.000
+                       Rp {{ ($event->current_ticket_price->price ?? 0) > 0 ? '5.000' : '0' }}
                     </span>
 
                 </div>
@@ -190,7 +190,7 @@
                         class="text-indigo-600">
 
                         Rp
-                        {{ number_format(($event->current_ticket_price->price ?? 0) + 5000,0,',','.') }}
+                       {{ number_format(($event->current_ticket_price->price ?? 0) + (($event->current_ticket_price->price ?? 0) > 0 ? 5000 : 0),0,',','.') }}
 
                     </span>
 
@@ -270,7 +270,11 @@
 
                 @csrf
 
-
+            <input
+                type="hidden"
+                name="voucher_code"
+                id="voucher_code_hidden">
+                
                 <div>
 
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">
@@ -351,10 +355,17 @@
                     type="submit"
                     class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all">
 
+                @if(($event->current_ticket_price->price ?? 0) == 0)
+
+                    Dapatkan E-Ticket
+
+                @else
+
                     Lanjut Pembayaran
 
-                </button>
+                @endif
 
+                </button>
 
                 <p class="text-center text-xs text-slate-400">
 
@@ -433,6 +444,8 @@ function applyVoucher() {
 
         if (!data.success) {
 
+        document.getElementById('voucher_code_hidden').value = '';
+
             message.innerText = data.message;
 
             message.className =
@@ -443,6 +456,8 @@ function applyVoucher() {
         }
 
 
+        document.getElementById('voucher_code_hidden').value = data.code;
+        
         message.innerText = data.message;
 
         message.className =
