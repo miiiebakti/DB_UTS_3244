@@ -152,7 +152,15 @@
                         @endif
                     
                         <span class="text-lg font-medium text-indigo-200">
-                            / orang
+                            @if(($event->current_ticket_price->price ?? 0) == 0)
+
+                                GRATIS
+
+                            @else
+
+                                Rp {{ number_format($event->current_ticket_price->price,0,',','.') }}/orang
+
+                            @endif
                         </span>
 
                     </h2>
