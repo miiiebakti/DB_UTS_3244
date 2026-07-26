@@ -78,38 +78,43 @@ class MidtransWebhookController extends Controller
     }
 
     private function processSuccess(Transaction $transaction)
-    {
-        $event = $transaction->event;
+{
+    $event = $transaction->event;
 
-        // Kurangi stok jika masih tersedia
-        if ($event && $event->stock > 0) {
+    if ($event && $event->stock > 0) {
 
-            $event->stock = $event->stock - 1;
-            $event->save();
+        $event->stock = $event->stock - 1;
+        $event->save();
 
-            // Kirim E-Ticket ke email pembeli
-            try {
+        try {
 
-                \Illuminate\Support\Facades\Mail::to(
-                    $transaction->customer_email
-                )->send(
-                    new \App\Mail\EventTicketMail($transaction)
-                );
-
-            } catch (\Exception $e) {
-
-                \Log::error(
-                    'Gagal mengirim email E-Ticket: ' .
-                    $e->getMessage()
-                );
-            }
-
-        } else {
-
-            \Log::warning(
-                'Stock habis setelah pembayaran berhasil. Order: ' .
-                $transaction->order_id
+            // Kirim E-Ticket
+            \Illuminate\Support\Facades\Mail::to(
+                $transaction->customer_email
+            )->send(
+                new \App\Mail\EventTicketMail($transaction)
             );
-        }
+
+            // Kirim E-Sertifikat
+            \Illuminate\Support\Facades\Mail::to(
+                $transaction->customer_email
+            )->send(
+                new \App\Mail\CertificateMail($transaction)
+            );
+
+        } catch (\Exception $e) {
+    dd($e->getMessage());
+}
+
+    } else {
+
+        \Log::warning(
+            'Stock habis setelah pembayaran berhasil. Order: ' .
+            $transaction->order_id
+        );
+
     }
+
+}
+
 }

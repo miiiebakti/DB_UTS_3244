@@ -26,6 +26,12 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\TicketPriceController;
 
 
+use App\Models\Transaction;
+use App\Mail\CertificateMail;
+use Illuminate\Support\Facades\Mail;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | LOGIN CUSTOMER
@@ -129,6 +135,10 @@ Route::get('/organizer/{user}', [OrganizerProfileController::class, 'show'])
     ->name('organizer.profile');
 
 
+Route::get('/ticket', [TicketController::class, 'ticket'])
+    ->name('ticket');
+
+
 /*
 |--------------------------------------------------------------------------
 | CHECK VOUCHER
@@ -172,7 +182,6 @@ Route::middleware('customer')->group(function () {
 
     Route::get('/success/{order_id}', [CheckoutController::class, 'success'])
         ->name('checkout.success');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -243,6 +252,8 @@ Route::prefix('admin')
         Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])
             ->name('admin.events.destroy');
 
+
+
     });
 
 
@@ -267,3 +278,13 @@ Route::prefix('admin')
         Route::resource('organizers', OrganizerController::class);
 
     });
+
+Route::get('/test-certificate', function () {
+
+    $transaction = App\Models\Transaction::latest()->first();
+
+    Mail::to($transaction->customer_email)
+        ->send(new App\Mail\CertificateMail($transaction));
+
+    return "Berhasil";
+});

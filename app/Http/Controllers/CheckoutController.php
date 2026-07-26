@@ -413,25 +413,19 @@ $ticketPrice = (float) $currentTicket->price;
                                 $currentTicket->increment('sold');
                             }
                             
-                            try {
+try {
 
-                                \Illuminate\Support\Facades\Mail::to(
-                                    $transaction->customer_email
-                                )->send(
-                                    new \App\Mail\EventTicketMail(
-                                        $transaction
-                                    )
-                                );
+    \Mail::to($transaction->customer_email)
+        ->send(new \App\Mail\EventTicketMail($transaction));
 
-                            } catch (\Exception $e) {
+    \Mail::to($transaction->customer_email)
+        ->send(new \App\Mail\CertificateMail($transaction));
 
-                                \Log::error(
-                                    'Gagal mengirim email E-Ticket: ' .
-                                    $e->getMessage()
-                                );
+} catch (\Exception $e) {
 
-                            }
+    \Log::error($e->getMessage());
 
+}
                         }
 
                     }
