@@ -62,7 +62,7 @@
 
         <td class="px-8 py-6">
             <p class="font-bold text-indigo-600">
-                Rp {{ number_format($event->price) }}
+                Rp {{ number_format($event->current_ticket_price->price ?? 0, 0, ',', '.') }}
             </p>
             <p class="text-xs text-slate-400">
                 Stok: {{ $event->stock }}

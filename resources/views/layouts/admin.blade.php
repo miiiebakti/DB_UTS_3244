@@ -73,23 +73,23 @@
             </a>
 
             <!-- REVIEW PENGUNJUNG -->
-            <a href="{{ route('admin.reviews') }}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
-                {{ Request::is('admin/reviews') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+        <a href="{{ route('admin.reviews') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+            {{ Request::is('admin/reviews') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
 
-                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
 
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M8 10h8M8 14h5m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
-                    </path>
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 10h8M8 14h5m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
 
-                </svg>
+            </svg>
 
-                <span>Review Pengunjung</span>
+            <span>Review Pengunjung</span>
 
-            </a>
+        </a>
 
             @if(Auth::user()->role == 'superadmin')
 
@@ -235,7 +235,41 @@
 
                 Laporan Transaksi
             </a>
+             @if(Auth::user()->role == 'superadmin')
 
+            <a href="{{ route('admin.vouchers.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/vouchers*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 5H9a2 2 0 00-2 2v2a2 2 0 01-2 2H3v4h2a2 2 0 012 2v2a2 2 0 002 2h6a2 2 0 002-2v-2a2 2 0 012-2h2v-4h-2a2 2 0 01-2-2V7a2 2 0 00-2-2z">
+                    </path>
+                </svg>
+
+                Voucher
+            </a>
+
+            <a href="{{ route('admin.ticket-prices.index') }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                {{ Request::is('admin/ticket-prices*') ? 'bg-indigo-700 text-white' : 'hover:bg-indigo-800' }}">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8c-2.2 0-4 1.34-4 3s1.8 3 4 3 4 1.34 4 3-1.8 3-4 3m0-12V4m0 16v-3">
+                    </path>
+                </svg>
+
+                Harga Tiket
+            </a>
+
+            @endif
         </nav>
 
              <!-- FOOTER -->

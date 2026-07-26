@@ -11,23 +11,30 @@ class CustomerMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Belum login
         if (!Auth::check()) {
-            return redirect()
-                ->route('google.login', [
-                    'event_id' => $request->route('event')?->id
-                ]);
+
+            session([
+                'event_id' => $request->route('event')?->id,
+            ]);
+
+            return redirect()->route('google.login');
         }
 
+        // Login tapi bukan customer
         if (Auth::user()->role !== 'customer') {
+
             Auth::logout();
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
+            session([
+                'event_id' => $request->route('event')?->id,
+            ]);
+
             return redirect()
-                ->route('google.login', [
-                    'event_id' => $request->route('event')?->id
-                ])
+                ->route('google.login')
                 ->with(
                     'error',
                     'Silakan login menggunakan akun customer.'

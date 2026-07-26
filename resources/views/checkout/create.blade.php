@@ -3,6 +3,7 @@
 @section('title', 'Checkout - ' . $event->title)
 
 @section('content')
+
 <main class="max-w-3xl mx-auto px-6 py-20">
 
     <div class="mb-12">
@@ -50,7 +51,7 @@
     <div class="grid grid-cols-1 gap-8">
 
 
-        <!-- SUMMARY -->
+        <!-- PESANAN -->
 
         <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
 
@@ -87,7 +88,7 @@
                     <p class="text-indigo-600 font-bold mt-2">
 
                         1 x Rp
-                        {{ number_format($event->price,0,',','.') }}
+                        {{ number_format($event->current_ticket_price->price ?? 0,0,',','.') }}
 
                     </p>
 
@@ -95,6 +96,43 @@
 
             </div>
 
+
+            <!-- VOUCHER -->
+
+            <div class="mt-8 pt-6 border-t">
+
+                <label class="block font-bold mb-3">
+                    Kode Voucher
+                </label>
+
+                <div class="flex gap-3">
+
+                    <input
+                        type="text"
+                        id="voucher_code"
+                        placeholder="Masukkan kode voucher"
+                        class="flex-1 px-5 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none uppercase">
+
+                    <button
+                        type="button"
+                        onclick="applyVoucher()"
+                        class="px-7 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold">
+
+                        Gunakan
+
+                    </button>
+
+                </div>
+
+                <p
+                    id="voucher_message"
+                    class="text-sm font-bold mt-3">
+                </p>
+
+            </div>
+
+
+            <!-- RINGKASAN HARGA -->
 
             <div class="mt-8 pt-6 border-t space-y-3">
 
@@ -105,7 +143,24 @@
                     </span>
 
                     <span>
-                        Rp {{ number_format($event->price,0,',','.') }}
+                        Rp {{ number_format($event->current_ticket_price->price ?? 0,0,',','.') }}
+                    </span>
+
+                </div>
+
+
+                <div class="flex justify-between text-slate-500">
+
+                    <span>
+                        Diskon Voucher
+                    </span>
+
+                    <span
+                        id="discount_amount"
+                        class="text-green-600 font-bold">
+
+                        Rp 0
+
                     </span>
 
                 </div>
@@ -130,10 +185,12 @@
                         Total Bayar
                     </span>
 
-                    <span class="text-indigo-600">
+                    <span
+                        id="final_total"
+                        class="text-indigo-600">
 
                         Rp
-                        {{ number_format($event->price + 5000,0,',','.') }}
+                        {{ number_format(($event->current_ticket_price->price ?? 0) + 5000,0,',','.') }}
 
                     </span>
 
@@ -144,7 +201,7 @@
         </div>
 
 
-        <!-- FORM -->
+        <!-- FORM PEMESAN -->
 
         <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
 
@@ -186,10 +243,11 @@
 
             @else
 
-                <a href="{{ route('google.login', [
-                    'event_id' => $event->id,
-                    'login_action' => 'checkout'
-                ]) }}"
+                <a
+                    href="{{ route('google.login', [
+                        'event_id' => $event->id,
+                        'login_action' => 'checkout'
+                    ]) }}"
                     class="w-full flex items-center justify-center gap-3 py-4 border-2 border-gray-300 rounded-2xl font-bold hover:bg-gray-100 transition mb-8">
 
                     <img
@@ -202,6 +260,8 @@
 
             @endif
 
+
+            <!-- FORM -->
 
             <form
                 action="{{ route('checkout.store', $event->id) }}"
@@ -229,7 +289,6 @@
                         value="{{ Auth::check() && Auth::user()->role === 'customer'
                             ? Auth::user()->name
                             : session('customer_name', old('customer_name')) }}">
-
 
                 </div>
 
@@ -311,4 +370,110 @@
     </div>
 
 </main>
+
+
+<script>
+
+function applyVoucher() {
+
+    const codeInput = document.getElementById('voucher_code');
+
+    const message = document.getElementById('voucher_message');
+
+    const discountAmount = document.getElementById('discount_amount');
+
+    const finalTotal = document.getElementById('final_total');
+
+    const code = codeInput.value.trim();
+
+
+    if (!code) {
+
+        message.innerText = 'Masukkan kode voucher terlebih dahulu.';
+        message.className = 'text-sm font-bold mt-3 text-red-600';
+
+        return;
+
+    }
+
+
+    message.innerText = 'Memeriksa voucher...';
+    message.className = 'text-sm font-bold mt-3 text-slate-500';
+
+
+    fetch("{{ route('checkout.voucher', $event->id) }}", {
+
+        method: 'POST',
+
+        headers: {
+
+            'Content-Type': 'application/json',
+
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+
+            'Accept': 'application/json'
+
+        },
+
+        body: JSON.stringify({
+
+            code: code,
+
+            total: {{ $event->current_ticket_price->price ?? 0 }}
+
+        })
+
+    })
+
+
+    .then(response => response.json())
+
+
+    .then(data => {
+
+        if (!data.success) {
+
+            message.innerText = data.message;
+
+            message.className =
+                'text-sm font-bold mt-3 text-red-600';
+
+            return;
+
+        }
+
+
+        message.innerText = data.message;
+
+        message.className =
+            'text-sm font-bold mt-3 text-green-600';
+
+
+        discountAmount.innerText =
+            '- Rp ' +
+            Number(data.discount).toLocaleString('id-ID');
+    
+        finalTotal.innerText =
+            'Rp ' +
+            Number(data.final_total).toLocaleString('id-ID');
+
+    })
+
+
+    .catch(error => {
+
+        console.error(error);
+
+        message.innerText =
+            'Terjadi kesalahan saat menggunakan voucher.';
+
+        message.className =
+            'text-sm font-bold mt-3 text-red-600';
+
+    });
+
+}
+
+</script>
+
 @endsection

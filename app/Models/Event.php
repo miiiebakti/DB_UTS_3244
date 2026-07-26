@@ -7,29 +7,43 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $fillable = [
-        'user_id',
-        'category_id',
         'title',
         'description',
         'date',
         'location',
-        'price',
+        'poster_path',
         'stock',
-        'poster_path'
+        'price',
+        'category_id',
     ];
 
+    // Relasi kategori
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function user()
+    // Relasi ticket price
+    public function ticketPrices()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(TicketPrice::class);
     }
 
-    public function reviews()
+    // Ambil harga tiket yang sedang berlaku
+    public function getCurrentTicketPriceAttribute()
     {
-        return $this->hasMany(Review::class);
+        return $this->ticketPrices()
+            ->where('is_active', true)
+            ->whereDate('start_date', '<=', now())
+            ->where(function ($query) {
+                $query->whereNull('end_date')
+                      ->orWhereDate('end_date', '>=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('quota')
+                      ->orWhereColumn('sold', '<', 'quota');
+            })
+            ->orderBy('start_date')
+            ->first();
     }
 }

@@ -11,13 +11,13 @@ class GoogleController extends Controller
 {
     public function redirect(Request $request)
     {
-        if ($request->has('event_id')) {
+        if ($request->filled('event_id')) {
             session([
                 'event_id' => $request->event_id
             ]);
         }
 
-        if ($request->has('login_action')) {
+        if ($request->filled('login_action')) {
             session([
                 'login_action' => $request->login_action
             ]);
@@ -43,7 +43,7 @@ class GoogleController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | JIKA EMAIL SUDAH DIPAKAI ADMIN / ORGANIZER
+        | Admin / Organizer tidak boleh login customer
         |--------------------------------------------------------------------------
         */
 
@@ -53,17 +53,16 @@ class GoogleController extends Controller
         ])) {
 
             return redirect()
-                ->route('google.login')
+                ->route('login')
                 ->with(
                     'error',
-                    'Akun ini merupakan akun admin/organizer. Silakan gunakan akun customer.'
+                    'Akun ini merupakan akun admin/organizer.'
                 );
         }
 
-
         /*
         |--------------------------------------------------------------------------
-        | JIKA USER BELUM ADA
+        | Buat customer jika belum ada
         |--------------------------------------------------------------------------
         */
 
@@ -82,12 +81,12 @@ class GoogleController extends Controller
                 'name' => $googleUser->getName(),
                 'role' => 'customer',
             ]);
-        }
 
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | LOGIN CUSTOMER
+        | Login Customer
         |--------------------------------------------------------------------------
         */
 
@@ -98,40 +97,41 @@ class GoogleController extends Controller
             'customer_email' => $user->email,
         ]);
 
-
         /*
         |--------------------------------------------------------------------------
-        | JIKA LOGIN UNTUK CHECKOUT
+        | Jika berasal dari Checkout
         |--------------------------------------------------------------------------
         */
 
-        $eventId = session('event_id');
+        if (session('login_action') === 'checkout' && session()->has('event_id')) {
 
-        if ($eventId) {
+            $eventId = session('event_id');
 
-            session()->forget('event_id');
+            session()->forget([
+                'login_action',
+                'event_id'
+            ]);
 
-            return redirect()
-                ->route('checkout.create', $eventId);
+            return redirect()->route('checkout.create', $eventId);
         }
-
 
         /*
         |--------------------------------------------------------------------------
-        | JIKA LOGIN UNTUK REVIEW
+        | Jika berasal dari Review
         |--------------------------------------------------------------------------
         */
 
-        $loginAction = session('login_action');
+        if (session('login_action') === 'review' && session()->has('review_event_id')) {
 
-        if ($loginAction === 'review') {
+            $eventId = session('review_event_id');
 
-            session()->forget('login_action');
+            session()->forget([
+                'login_action',
+                'review_event_id'
+            ]);
 
-            return redirect()
-                ->route('events.show', session('review_event_id'));
+            return redirect()->route('events.show', $eventId);
         }
-
 
         return redirect()->route('home');
     }

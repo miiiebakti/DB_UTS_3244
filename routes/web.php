@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\JabatanController;
 use App\Http\Controllers\Admin\PengurusController;
 use App\Http\Controllers\Admin\OrganizerController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\TicketPriceController;
 
 
 /*
@@ -43,7 +45,6 @@ Route::get('/login', function () {
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // /admin langsung menuju halaman login admin
     Route::get('/', function () {
         return redirect()->route('admin.login');
     });
@@ -120,7 +121,7 @@ Route::get('/checkout', [EventController::class, 'checkout'])
 
 /*
 |--------------------------------------------------------------------------
-| PROFIL ORGANIZER - PUBLIC
+| PROFIL ORGANIZER
 |--------------------------------------------------------------------------
 */
 
@@ -130,37 +131,35 @@ Route::get('/organizer/{user}', [OrganizerProfileController::class, 'show'])
 
 /*
 |--------------------------------------------------------------------------
-| CUSTOMER
+| CHECK VOUCHER
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/checkout/{event}/voucher', [VoucherController::class, 'check'])
+    ->name('checkout.voucher');
+
+
+/*
+|--------------------------------------------------------------------------
+| REVIEW + TIKET (LOGIN)
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('customer')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | REVIEW CUSTOMER
-    |--------------------------------------------------------------------------
-    */
-
     Route::post('/reviews/{event}', [ReviewController::class, 'store'])
         ->name('reviews.store');
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TICKET
-    |--------------------------------------------------------------------------
-    */
-
     Route::get('/ticket', [TicketController::class, 'ticket'])
         ->name('ticket');
+});
 
+/*
+|--------------------------------------------------------------------------
+| CHECKOUT (TANPA LOGIN)
+|--------------------------------------------------------------------------
+*/
 
-    /*
-    |--------------------------------------------------------------------------
-    | CHECKOUT
-    |--------------------------------------------------------------------------
-    */
 
     Route::get('/checkout/{event}', [CheckoutController::class, 'create'])
         ->name('checkout.create');
@@ -168,20 +167,11 @@ Route::middleware('customer')->group(function () {
     Route::post('/checkout/{event}', [CheckoutController::class, 'store'])
         ->name('checkout.store');
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | PAYMENT
-    |--------------------------------------------------------------------------
-    */
-
     Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])
         ->name('checkout.payment');
 
     Route::get('/success/{order_id}', [CheckoutController::class, 'success'])
         ->name('checkout.success');
-
-});
 
 
 /*
@@ -194,30 +184,31 @@ Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | DASHBOARD
-        |--------------------------------------------------------------------------
-        */
-
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | REVIEW PENGUNJUNG
-        |--------------------------------------------------------------------------
-        */
 
         Route::get('/reviews', [AdminReviewController::class, 'index'])
             ->name('admin.reviews');
 
 
         /*
-        |--------------------------------------------------------------------------
-        | TRANSACTION
-        |--------------------------------------------------------------------------
+        | VOUCHER
+        */
+
+        Route::resource('vouchers', VoucherController::class)
+            ->names('admin.vouchers');
+
+
+        /*
+        | HARGA TIKET
+        */
+
+        Route::resource('ticket-prices', TicketPriceController::class)
+            ->names('admin.ticket-prices');
+
+
+        /*
+        | TRANSAKSI
         */
 
         Route::get('/transactions', [TransactionController::class, 'index'])
@@ -231,9 +222,7 @@ Route::prefix('admin')
 
 
         /*
-        |--------------------------------------------------------------------------
         | EVENT
-        |--------------------------------------------------------------------------
         */
 
         Route::get('/events', [AdminEventController::class, 'index'])

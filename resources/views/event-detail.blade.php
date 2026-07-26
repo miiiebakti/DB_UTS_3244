@@ -140,13 +140,17 @@
                 <div>
 
                     <p class="text-indigo-200 font-bold uppercase tracking-widest text-sm mb-2">
-                        Harga Tiket
+                        {{ $event->current_ticket_price->name ?? 'Harga Tiket' }}
                     </p>
 
                     <h2 class="text-5xl font-black">
-
-                        Rp {{ number_format($event->price, 0, ',', '.') }}
-
+                        
+                        @if($event->current_ticket_price)
+                            Rp {{ number_format($event->current_ticket_price->price, 0, ',', '.') }}
+                        @else
+                            Harga Belum Tersedia
+                        @endif
+                    
                         <span class="text-lg font-medium text-indigo-200">
                             / orang
                         </span>
