@@ -18,59 +18,59 @@
             </svg>
         </div>
 
-        @if($transaction->total_price == 0)
+        <h2 class="text-3xl font-black mb-4">Terima Kasih!</h2>
+        <p class="text-slate-500 mb-8 leading-relaxed">
+            Pembayaran untuk pesanan <strong>{{ $transaction->order_id }}</strong> sedang diproses atau telah berhasil. 
+            E-Ticket dan E-Certificate akan dikirim ke email Anda (<strong>{{ $transaction->customer_email }}</strong>) setelah pembayaran terkonfirmasi lunas.
+        </p>
+        <a href="{{ route('home') }}" class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
 
-            <h2 class="text-3xl font-black mb-4">
-                E-Ticket Berhasil Diterbitkan!
-            </h2>
 
-            <p class="text-slate-500 mb-8 leading-relaxed">
+@if($transaction->total_price == 0)
 
-                Pesanan
-                <strong>{{ $transaction->order_id }}</strong>
-                berhasil dibuat.
+    <h2 class="text-3xl font-black mb-4">
+        E-Ticket Berhasil Diterbitkan!
+    </h2>
 
-                <br><br>
+    <p class="text-slate-500 mb-8 leading-relaxed">
+        Pesanan
+        <strong>{{ $transaction->order_id }}</strong>
+        berhasil dibuat.
 
-                Karena event ini <strong>gratis</strong>,
-                Anda tidak perlu melakukan pembayaran.
+        <br><br>
 
-                <br><br>
+        Karena event ini <strong>gratis</strong>,
+        Anda tidak perlu melakukan pembayaran.
 
-                E-Ticket telah dikirim ke email
-                <strong>{{ $transaction->customer_email }}</strong>.
+        <br><br>
 
-            </p>
+        E-Ticket dan E-Certificate telah dikirim ke email
+        <strong>{{ $transaction->customer_email }}</strong>.
+    </p>
 
-        @else
+@else
 
-            <h2 class="text-3xl font-black mb-4">
-                Pembayaran Berhasil!
-            </h2>
+    <h2 class="text-3xl font-black mb-4">
+        Pembayaran Berhasil!
+    </h2>
 
-            <p class="text-slate-500 mb-8 leading-relaxed">
+    <p class="text-slate-500 mb-8 leading-relaxed">
+        Pembayaran untuk pesanan
+        <strong>{{ $transaction->order_id }}</strong>
+        telah berhasil dikonfirmasi.
 
-                Pembayaran untuk pesanan
-                <strong>{{ $transaction->order_id }}</strong>
-                telah berhasil dikonfirmasi.
+        <br><br>
 
-                <br><br>
+        E-Ticket dan E-Certificate telah dikirim ke email
+        <strong>{{ $transaction->customer_email }}</strong>.
+    </p>
 
-                E-Ticket telah dikirim ke email
+@endif
 
-                <strong>{{ $transaction->customer_email }}</strong>.
-
-            </p>
-
-        @endif
-
-        <a href="{{ route('home') }}"
-           class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
-
-            Kembali ke Beranda
-
-        </a>
-
+<a href="{{ route('home') }}"
+   class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
+    Kembali ke Beranda
+</a>
     </div>
 
 </main>
