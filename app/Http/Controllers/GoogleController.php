@@ -13,13 +13,13 @@ class GoogleController extends Controller
     {
         if ($request->filled('event_id')) {
             session([
-                'event_id' => $request->event_id
+                'event_id' => $request->event_id,
             ]);
         }
 
         if ($request->filled('login_action')) {
             session([
-                'login_action' => $request->login_action
+                'login_action' => $request->login_action,
             ]);
         }
 
@@ -99,11 +99,14 @@ class GoogleController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Jika berasal dari Checkout
+        | Redirect jika berasal dari Checkout
         |--------------------------------------------------------------------------
         */
 
-        if (session('login_action') === 'checkout' && session()->has('event_id')) {
+        if (
+            session('login_action') === 'checkout'
+            && session()->has('event_id')
+        ) {
 
             $eventId = session('event_id');
 
@@ -112,26 +115,41 @@ class GoogleController extends Controller
                 'event_id'
             ]);
 
-            return redirect()->route('checkout.create', $eventId);
+            return redirect()->route(
+                'checkout.create',
+                $eventId
+            );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Jika berasal dari Review
+        | Redirect jika berasal dari Review
         |--------------------------------------------------------------------------
         */
 
-        if (session('login_action') === 'review' && session()->has('review_event_id')) {
+        if (
+            session('login_action') === 'review'
+            && session()->has('event_id')
+        ) {
 
-            $eventId = session('review_event_id');
+            $eventId = session('event_id');
 
             session()->forget([
                 'login_action',
-                'review_event_id'
+                'event_id'
             ]);
 
-            return redirect()->route('events.show', $eventId);
+            return redirect()->route(
+                'events.show',
+                $eventId
+            );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Default
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()->route('home');
     }

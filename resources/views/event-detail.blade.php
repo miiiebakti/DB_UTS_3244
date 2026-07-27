@@ -289,11 +289,18 @@
 
             <div class="flex items-center justify-between mb-6">
 
+            <div>
                 <h2 class="text-2xl font-bold">
                     Review Pengunjung
                 </h2>
 
+                <p class="text-sm text-slate-500 mt-1">
+                    ⭐ {{ number_format($reviews->avg('rating') ?? 0,1) }}/5
+                    • {{ $reviews->count() }} Ulasan
+                </p>
             </div>
+
+        </div>
 
 
             <!-- SUCCESS MESSAGE -->
@@ -337,128 +344,184 @@
 
             @endif
 
-
             <!-- CUSTOMER SUDAH LOGIN -->
-            @auth
+            @php
+    $userReview = auth()->check()
+        ? $reviews->firstWhere('user_id', auth()->id())
+        : null;
+@endphp
 
-                <form
-                    action="{{ route('reviews.store', $event->id) }}"
-                    method="POST"
-                    class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+@auth
 
-                    @csrf
+    @if(now()->lt(\Carbon\Carbon::parse($event->date)->addDay()))
 
+        <div class="bg-yellow-50 border border-yellow-300 rounded-2xl p-8 mb-8 text-center">
+            <h3 class="font-semibold text-lg mb-2">
+                ⭐ Review Belum Dibuka
+            </h3>
 
-                    <!-- EMAIL -->
-                    <div class="mb-4">
+            <p class="text-gray-600">
+                Review dapat diberikan sehari setelah acara selesai.
+            </p>
+        </div>
 
-                        <label class="font-semibold">
-                            Email
-                        </label>
+    @elseif($userReview)
 
-                        <input
-                            type="text"
-                            value="{{ auth()->user()->email }}"
-                            class="w-full border rounded-lg p-3 mt-2 bg-gray-100"
-                            readonly>
+        <div class="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8">
 
-                    </div>
+            <div class="flex items-center justify-between">
 
-
-                    <!-- RATING -->
-                    <div class="mb-4">
-
-                        <label class="font-semibold">
-                            Rating
-                        </label>
-
-                        <select
-                            name="rating"
-                            class="w-full border rounded-lg p-3 mt-2"
-                            required>
-
-                            <option value="5">
-                                ⭐⭐⭐⭐⭐ (5)
-                            </option>
-
-                            <option value="4">
-                                ⭐⭐⭐⭐ (4)
-                            </option>
-
-                            <option value="3">
-                                ⭐⭐⭐ (3)
-                            </option>
-
-                            <option value="2">
-                                ⭐⭐ (2)
-                            </option>
-
-                            <option value="1">
-                                ⭐ (1)
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- REVIEW -->
-                    <div class="mb-4">
-
-                        <label class="font-semibold">
-                            Ulasan
-                        </label>
-
-                        <textarea
-                            name="review"
-                            rows="5"
-                            class="w-full border rounded-lg p-3 mt-2"
-                            placeholder="Bagikan pengalamanmu mengikuti event ini..."
-                            required></textarea>
-
-                    </div>
-
-
-                    <!-- SUBMIT -->
-                    <button
-                        type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
-
-                        Kirim Review
-
-                    </button>
-
-                </form>
-
-
-            <!-- CUSTOMER BELUM LOGIN -->
-            @else
-
-                <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center">
-
-                    <h3 class="font-semibold text-lg mb-2">
-                        Ingin memberikan review?
+                <div>
+                    <h3 class="font-bold text-lg text-green-700">
+                        ✅ Terima kasih atas ulasanmu!
                     </h3>
 
-                    <p class="text-gray-500 mb-5">
-                        Login terlebih dahulu untuk memberikan ulasan.
+                    <p class="text-slate-500">
+                        Kamu sudah memberikan review untuk event ini.
                     </p>
+                </div>
 
-                    <a
-                        href="{{ route('google.login', [
-                            'event_id' => $event->id,
-                            'login_action' => 'review'
-                        ]) }}"
-                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
+                <div class="text-yellow-500 text-xl">
+                    {{ str_repeat('⭐', $userReview->rating) }}
+                </div>
 
-                        Login dengan Google
+            </div>
 
-                    </a>
+        </div>
+
+    @else
+
+        <form action="{{ route('reviews.store', $event->id) }}"
+            method="POST"
+            class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+            @csrf
+
+            <div class="mb-4">
+                <label class="font-semibold">Email</label>
+
+                <input
+                    type="text"
+                    value="{{ auth()->user()->email }}"
+                    class="w-full border rounded-lg p-3 mt-2 bg-gray-100"
+                    readonly>
+            </div>
+
+            <div class="mb-4">
+                <label class="font-semibold">Rating</label>
+
+                <select
+                    name="rating"
+                    class="w-full border rounded-lg p-3 mt-2"
+                    required>
+
+                    <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4)</option>
+                    <option value="3">⭐⭐⭐ (3)</option>
+                    <option value="2">⭐⭐ (2)</option>
+                    <option value="1">⭐ (1)</option>
+
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="font-semibold">Ulasan</label>
+
+                <textarea
+                    name="review"
+                    rows="5"
+                    class="w-full border rounded-lg p-3 mt-2"
+                    placeholder="Bagikan pengalamanmu mengikuti event ini..."
+                    required></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg">
+
+                Kirim Review
+
+            </button>
+
+        </form>
+
+    @endif
+
+@else
+
+    @if(now()->lt(\Carbon\Carbon::parse($event->date)->addDay()))
+
+        <div class="relative bg-gradient-to-r from-indigo-50 to-purple-50 rounded-[2rem] p-8 overflow-hidden">
+
+            <div class="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-indigo-200 opacity-40"></div>
+
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-purple-200 opacity-40"></div>
+
+            <div class="relative">
+
+                <h3 class="font-bold text-xl">
+                    ⭐ Review Belum Dibuka
+                </h3>
+
+                <p class="text-slate-600 mt-2">
+                    Review dapat diberikan sehari setelah acara selesai.
+                </p>
+
+            </div>
+
+        </div>
+
+    @else
+
+        <div class="relative overflow-hidden rounded-3xl p-6 mb-8
+        bg-white/70 backdrop-blur-xl
+        border border-white/60
+        shadow-lg">
+
+            <div class="absolute -top-6 -right-6 w-20 h-20 bg-indigo-300/20 rounded-full blur-xl"></div>
+            <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-purple-300/20 rounded-full blur-xl"></div>
+
+            <div class="relative text-center">
+
+                <div class="mx-auto mb-3 w-12 h-12 rounded-full
+                bg-gradient-to-br from-indigo-100 to-purple-100
+                flex items-center justify-center shadow">
+
+                    💬
 
                 </div>
 
-            @endauth
+                <h3 class="text-xl font-bold text-slate-800">
+                    Ingin memberikan review?
+                </h3>
 
+                <p class="mt-2 text-sm text-slate-500">
+                    Login terlebih dahulu untuk memberikan pengalamanmu.
+                </p>
+
+                <a
+                    href="{{ route('google.login', [
+                        'event_id' => $event->id,
+                        'login_action' => 'review'
+                    ]) }}"
+                    class="inline-flex items-center gap-2 mt-5
+                    px-6 py-2.5 rounded-xl
+                    bg-gradient-to-r from-indigo-600 to-purple-600
+                    text-white font-semibold
+                    shadow-md
+                    hover:scale-105 duration-300">
+
+                    Login dengan Google →
+
+                </a>
+
+            </div>
+
+        </div>
+
+    @endif
+
+@endauth
 
             <!-- DAFTAR REVIEW -->
             @if(isset($reviews) && $reviews->count())
