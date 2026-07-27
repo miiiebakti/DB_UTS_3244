@@ -88,15 +88,39 @@
                         Nama Tahap
                     </label>
 
-                    <input
-                        type="text"
-                        name="name"
-                        value="{{ old('name') }}"
-                        placeholder="Contoh : Early Bird"
-                        required
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500">
+                     <select
+        name="name"
+        required
+        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500">
 
-                </div>
+        <option value="">Pilih Tahap</option>
+
+        <option value="Early Bird" {{ old('name') == 'Early Bird' ? 'selected' : '' }}>
+            Early Bird
+        </option>
+
+        <option value="Presale 1" {{ old('name') == 'Presale 1' ? 'selected' : '' }}>
+            Presale 1
+        </option>
+
+        <option value="Presale 2" {{ old('name') == 'Presale 2' ? 'selected' : '' }}>
+            Presale 2
+        </option>
+
+        <option value="Regular" {{ old('name') == 'Regular' ? 'selected' : '' }}>
+            Regular
+        </option>
+
+        <option value="VIP" {{ old('name') == 'VIP' ? 'selected' : '' }}>
+            VIP
+        </option>
+
+        <option value="Free Ticket" {{ old('name') == 'Free Ticket' ? 'selected' : '' }}>
+            Free Ticket
+        </option>
+
+    </select>
+           </div>
 
                 <!-- Harga -->
                 <div>

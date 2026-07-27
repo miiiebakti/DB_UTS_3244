@@ -1,47 +1,227 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>E-Certificate</title>
+    <meta charset="utf-8">
 
     <style>
-        body{
-            font-family: DejaVu Sans;
-            text-align:center;
-            padding-top:120px;
+        @page {
+            size: A4 landscape;
+            margin: 25px;
         }
 
-        h1{
-            font-size:42px;
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #222;
         }
 
-        h2{
-            font-size:30px;
-            margin-top:30px;
+        .certificate {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 12px solid #5B3DF5;
+            padding: 35px;
+            box-sizing: border-box;
         }
 
-        p{
-            font-size:18px;
+        .inner-border {
+            border: 2px solid #b8a8ff;
+            padding: 25px;
+            height: 100%;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 42%;
+            left: 20%;
+            font-size: 70px;
+            color: #5B3DF5;
+            opacity: 0.05;
+            font-weight: bold;
+            transform: rotate(-25deg);
+        }
+
+        .logo {
+            text-align: center;
+            color: #5B3DF5;
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            letter-spacing: 4px;
+            font-size: 15px;
+        }
+
+        .title {
+            text-align: center;
+            color: #5B3DF5;
+            font-size: 44px;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .line {
+            width: 220px;
+            border-top: 3px solid #5B3DF5;
+            margin: 15px auto 30px;
+        }
+
+        .text {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .name {
+            text-align: center;
+            color: #222;
+            font-size: 38px;
+            font-weight: bold;
+            margin: 18px 0;
+        }
+
+        .event {
+            text-align: center;
+            color: #5B3DF5;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        table.info {
+            width: 100%;
+            margin-top: 40px;
+            font-size: 16px;
+        }
+
+        table.info td {
+            padding: 6px;
+        }
+
+        .left {
+            width: 50%;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .signature {
+            margin-top: 80px;
+            text-align: right;
+        }
+
+        .signature-line {
+            width: 180px;
+            border-top: 1px solid #000;
+            margin-left: auto;
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #777;
+            font-size: 13px;
         }
     </style>
 
 </head>
+
 <body>
 
-<h1>SERTIFIKAT</h1>
+<div class="certificate">
 
-<p>Diberikan kepada</p>
+    <div class="watermark">
+        AmikomEventHub
+    </div>
 
-<h2>{{ $transaction->customer_name }}</h2>
+    <div class="inner-border">
 
-<p>Telah mengikuti event</p>
+        <div class="logo">
+            AmikomEventHub
+        </div>
 
-<h3>{{ $transaction->event->title }}</h3>
+        <div class="subtitle">
+            CERTIFICATE OF PARTICIPATION
+        </div>
 
-<p>
-Tanggal Event :
-{{ \Carbon\Carbon::parse($transaction->event->date)->format('d F Y') }}
-</p>
+        <div class="title">
+            E-CERTIFICATE
+        </div>
+
+        <div class="line"></div>
+
+        <div class="text">
+            This certificate is proudly presented to
+        </div>
+
+        <div class="name">
+            {{ $transaction->customer_name }}
+        </div>
+
+        <div class="text">
+            For successfully participating in
+        </div>
+
+        <div class="event">
+            {{ $transaction->event->title }}
+        </div>
+
+        <table class="info">
+
+            <tr>
+
+                <td class="left">
+                    <strong>Date :</strong>
+                    {{ \Carbon\Carbon::parse($transaction->event->date)->format('d F Y') }}
+                </td>
+
+                <td class="right">
+                    <strong>Certificate ID :</strong>
+                    {{ $transaction->order_id }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="left">
+                    <strong>Location :</strong>
+                    {{ $transaction->event->location }}
+                </td>
+
+                <td class="right">
+                    <strong>Status :</strong>
+                    Completed
+                </td>
+
+            </tr>
+
+        </table>
+
+        <div class="signature">
+
+            <div class="signature-line"></div>
+
+            <strong>Event Organizer</strong><br>
+
+            AmikomEventHub
+
+        </div>
+
+        <div class="footer">
+            This certificate was automatically generated by AmikomEventHub.
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>

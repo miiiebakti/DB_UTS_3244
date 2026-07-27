@@ -87,7 +87,7 @@
                             <th class="px-8 py-4">Tgl Transaksi</th>
                             <th class="px-8 py-4">Status</th>
                             <th class="px-8 py-4 text-right">Total Tagihan</th>
-                            <th class="px-8 py-4 text-center">Aksi</th>
+                            <th class="px-8 py-4 text-center">Sertifikat</th>
                         </tr>
                     </thead>
                     
@@ -155,22 +155,22 @@
 
 <td class="px-8 py-6 text-center">
 
-    @if(in_array($trx->status, ['Success', 'success', 'settlement']))
+@if(in_array($trx->status, ['Success', 'success', 'settlement']))
 
-        <a href="{{ route('transactions.certificate', $trx->id) }}"
-           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
+<a href="{{ route('certificate', $trx->id) }}"
+   class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
 
-            📄 Certificate
+    📄 Certificate
 
-        </a>
+</a>
 
-    @else
+@else
 
-        <span class="text-slate-400 text-sm">
-            Belum tersedia
-        </span>
+<span class="text-slate-400 text-sm">
+    Belum tersedia
+</span>
 
-    @endif
+@endif
 
 </td>
 

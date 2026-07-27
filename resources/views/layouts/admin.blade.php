@@ -25,7 +25,7 @@
     @endphp
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-indigo-900 text-indigo-100 flex flex-col p-6 space-y-8 sticky top-0 h-screen">
+    <aside class="w-64 bg-indigo-900 text-indigo-100 flex flex-col p-6 space-y-8 sticky top-0 h-screen overflow-y-auto">
 
         <!-- LOGO -->
         <div class="flex items-center gap-3">
@@ -235,7 +235,7 @@
 
                 Laporan Transaksi
             </a>
-             @if(Auth::user()->role == 'superadmin')
+
 
             <a href="{{ route('admin.vouchers.index') }}"
                 class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
@@ -266,11 +266,9 @@
                     </path>
                 </svg>
 
-                Harga Tiket
+                Harga Tiket 
             </a>
-
-            @endif
-        </nav>
+</nav>
 
              <!-- FOOTER -->
         <div class="pt-6 border-t border-indigo-800">
