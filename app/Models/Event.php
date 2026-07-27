@@ -6,16 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    protected $fillable = [
-        'title',
-        'description',
-        'date',
-        'location',
-        'poster_path',
-        'stock',
-        'price',
-        'category_id',
-    ];
+        protected $fillable = [
+            'user_id',
+            'title',
+            'description',
+            'date',
+            'location',
+            'poster_path',
+            'stock',
+            'price',
+            'category_id',
+        ];
 
     // Relasi kategori
     public function category()

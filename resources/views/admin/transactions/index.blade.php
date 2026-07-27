@@ -157,7 +157,7 @@
 
 @if(in_array($trx->status, ['Success', 'success', 'settlement']))
 
-<a href="{{ route('certificate', $trx->id) }}"
+<a href="{{ route('transactions.certificate', $trx->id) }}"
    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
 
     📄 Certificate

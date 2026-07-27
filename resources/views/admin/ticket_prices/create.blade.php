@@ -103,16 +103,8 @@
             Presale 1
         </option>
 
-        <option value="Presale 2" {{ old('name') == 'Presale 2' ? 'selected' : '' }}>
-            Presale 2
-        </option>
-
         <option value="Regular" {{ old('name') == 'Regular' ? 'selected' : '' }}>
             Regular
-        </option>
-
-        <option value="VIP" {{ old('name') == 'VIP' ? 'selected' : '' }}>
-            VIP
         </option>
 
         <option value="Free Ticket" {{ old('name') == 'Free Ticket' ? 'selected' : '' }}>
